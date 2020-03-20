@@ -4,7 +4,9 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from './firebaseConfig';
 // Initialize Firebase
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+export const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+export type firebaseUser = firebase.User;
 
 export interface IFirebase {
   loginWithEmail: Function;
@@ -37,7 +39,7 @@ const Firebase: IFirebase = {
     return firebase.auth().signInWithPopup(googleProvider);
   },
 
-  checkUserAuth: user => firebase.auth().onAuthStateChanged(user),
+  checkUserAuth: (user) => firebase.auth().onAuthStateChanged(user),
 
   // firestore
   createNewUser: (name: string): Promise<void> => {
@@ -64,4 +66,3 @@ const Firebase: IFirebase = {
 };
 
 export default Firebase;
-export { firebaseApp };
