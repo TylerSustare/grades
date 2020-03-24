@@ -36,3 +36,23 @@
     transform: rotate(360deg);
   }
 }
+
+.container {
+  display: flex;
+  align-items: stretch;
+  max-width: 100vw;
+}
+.left {
+  border: #61dafb;
+  border-style: solid;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.right {
+  border-color: #791a79;
+  border-style: solid;
+  display: flex;
+  flex: 2;
+  flex-direction: column;
+}

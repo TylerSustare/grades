@@ -7,61 +7,88 @@ import firebaseConfig from './firebaseConfig';
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 export type firebaseUser = firebase.User;
+type firestoreDocument = firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>;
 
 export interface IFirebase {
-  loginWithEmail: Function;
-  signupWithEmail: Function;
-  signOut: Function;
-  googleAuth: Function;
+  loginWithEmail: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
+  signupWithEmail: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
+  signOut: () => Promise<void>;
+  googleAuth: () => Promise<firebase.auth.UserCredential>;
   checkUserAuth: Function;
-  createNewUser: Function;
-  getNewUser: Function;
+  createNewUser: (name: string) => Promise<void>;
+  getNewUser: (name: string) => Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>>;
+  getAssignments: (classId: string) => Promise<string[]>;
 }
 
 const Firebase: IFirebase = {
   // auth
-  loginWithEmail: (
-    email: string,
-    password: string
-  ): Promise<firebase.auth.UserCredential> =>
+  loginWithEmail: (email: string, password: string): Promise<firebase.auth.UserCredential> =>
     firebase.auth().signInWithEmailAndPassword(email, password),
 
-  signupWithEmail: (
-    email: string,
-    password: string
-  ): Promise<firebase.auth.UserCredential> =>
+  signupWithEmail: (email: string, password: string): Promise<firebase.auth.UserCredential> =>
     firebase.auth().createUserWithEmailAndPassword(email, password),
 
   signOut: (): Promise<void> => firebase.auth().signOut(),
 
-  googleAuth: (): Promise<firebase.auth.UserCredential> => {
+  googleAuth: async (): Promise<firebase.auth.UserCredential> => {
+    // signin with google
     const googleProvider = new firebase.auth.GoogleAuthProvider();
-    return firebase.auth().signInWithPopup(googleProvider);
+    const user = await firebase.auth().signInWithPopup(googleProvider);
+    // save user in DB
+    const userStuff = {
+      uid: user.user.uid,
+      displayName: user.user.displayName,
+      photoURL: user.user.photoURL,
+      email: user.user.email
+    };
+    await firebase
+      .firestore()
+      .collection('users')
+      .doc(user.user.email)
+      .set(userStuff);
+    return user;
   },
 
   checkUserAuth: (user) => firebase.auth().onAuthStateChanged(user),
 
   // firestore
-  createNewUser: (name: string): Promise<void> => {
-    if (name.length === 0) {
+  createNewUser: (email: string): Promise<void> => {
+    if (email.length === 0) {
       return;
     }
     return firebase
       .firestore()
       .collection('users')
-      .doc(name)
-      .set({ name });
+      .doc(email)
+      .set({ email });
   },
 
-  getNewUser: (name: string) => {
-    if (name.length === 0) {
+  getNewUser: (email: string): Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>> => {
+    if (email.length === 0) {
       return;
     }
-    firebase
+    return firebase
       .firestore()
       .collection('users')
-      .doc(name)
+      .doc(email)
       .get();
+    // use with doc.data()
+  },
+
+  getAssignments: async (classId: string): Promise<string[]> => {
+    const classDoc: firestoreDocument = await firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .get();
+
+    const values = classDoc.data();
+    const assignments = Object.keys(values);
+    console.log('\n\n\n');
+    console.log('*************');
+    console.log('assignments', JSON.stringify(assignments, null, 2));
+    console.log('\n\n\n');
+    return assignments;
   }
 };
 
