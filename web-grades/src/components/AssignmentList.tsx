@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
+  const { assignment, setAssignment } = useContext(GradingContext);
   const [assignments, setAssignments] = useState([]);
   useEffect(() => {
     async function getAssignments() {
@@ -29,10 +30,8 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
       setAssignments(assignments);
     }
     getAssignments();
-    // return () => { cleanup; };
   }, [firebase]);
   const classes = useStyles();
-  const { assignment, setAssignment } = useContext(GradingContext);
   return (
     <>
       {assignments.map((a) => {

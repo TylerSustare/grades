@@ -10,18 +10,15 @@ import { AuthProvider } from './Auth';
 import Login from './Login';
 import Home from './Home';
 import theme from '../theme';
-import { GradingProvider } from './GradingContext';
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <GradingProvider>
-          <Router>
-            <Route exact path="/login" component={Login} />
-            <PrivateRoute exact path="/" component={Home} />
-          </Router>
-        </GradingProvider>
+        <Router>
+          <Route exact path="/login" component={Login} />
+          <PrivateRoute exact path="/" component={Home} />
+        </Router>
       </AuthProvider>
     </ThemeProvider>
   );

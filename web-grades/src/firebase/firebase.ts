@@ -3,6 +3,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import firebaseConfig from './firebaseConfig';
+import { AssignmentSubmission } from '../types/FirebaseModels';
 // Initialize Firebase
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
 
@@ -18,6 +19,13 @@ export interface IFirebase {
   createNewUser: (name: string) => Promise<void>;
   getNewUser: (name: string) => Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>>;
   getAssignments: (classId: string) => Promise<string[]>;
+  getAssignmentSubmissions: (classId: string, assignmentId: string) => Promise<AssignmentSubmission[]>;
+  submitAssignmentToClass: (classId: string, assignmentId: string) => Promise<void>;
+  getAssignmentByStudentEmail: (
+    classId: string,
+    assignmentId: string,
+    studentEmail: string
+  ) => Promise<AssignmentSubmission>;
 }
 
 const Firebase: IFirebase = {
@@ -72,7 +80,6 @@ const Firebase: IFirebase = {
       .collection('users')
       .doc(email)
       .get();
-    // use with doc.data()
   },
 
   getAssignments: async (classId: string): Promise<string[]> => {
@@ -82,14 +89,43 @@ const Firebase: IFirebase = {
       .doc(classId)
       .get();
 
-    const values = classDoc.data();
+    const values = classDoc.data(); // gets the value of the query
     const assignments = Object.keys(values);
-    console.log('\n\n\n');
-    console.log('*************');
-    console.log('assignments', JSON.stringify(assignments, null, 2));
-    console.log('\n\n\n');
     return assignments;
-  }
+  },
+
+  getAssignmentSubmissions: async (classId: string, assignmentId: string): Promise<AssignmentSubmission[]> => {
+    const classDoc: firestoreDocument = await firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .get();
+
+    const values = classDoc.data();
+    const assignment = values[assignmentId];
+    return assignment;
+  },
+
+  getAssignmentByStudentEmail: async (
+    classId: string,
+    assignmentId: string,
+    studentEmail: string
+  ): Promise<AssignmentSubmission> => {
+    const classDoc: firestoreDocument = await firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .get();
+
+    const values = classDoc.data();
+    const assignment: AssignmentSubmission[] = values[assignmentId];
+    if (!assignment) {
+      return {} as AssignmentSubmission;
+    }
+    return assignment.filter((a) => a.email === studentEmail)[0];
+  },
+
+  submitAssignmentToClass: async (classId: string, assignmentId: string): Promise<void> => {}
 };
 
 export default Firebase;

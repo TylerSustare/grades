@@ -14,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2)
   },
+  avatar: {
+    margin: theme.spacing(1)
+  },
   title: {
     flexGrow: 1
   }
@@ -25,7 +28,7 @@ const TopAppBar: React.FC<FirebaseProps> = ({ firebase }) => {
   return (
     <AppBar position="static">
       <Toolbar>
-        {currentUser ? <Avatar alt={currentUser.displayName} src={currentUser.photoURL} /> : <></>}
+        {currentUser && <Avatar className={classes.avatar} alt={currentUser.displayName} src={currentUser.photoURL} />}
         {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"> <MenuIcon /> </IconButton> */}
         <Typography variant="h6" className={classes.title}>
           {currentUser ? currentUser.email : ''} 7th Grades
