@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: #fff;
 }
 
 .App-link {
@@ -43,16 +43,40 @@
   max-width: 100vw;
 }
 .left {
-  border: #61dafb;
-  border-style: solid;
+  /* border: #61dafb; */
+  /* border-style: solid; */
   display: flex;
   flex: 1;
   flex-direction: column;
 }
 .right {
-  border-color: #791a79;
-  border-style: solid;
+  /* border-color: #791a79; */
+  /* border-style: solid; */
   display: flex;
   flex: 2;
   flex-direction: column;
+  align-items: center;
+}
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.btn {
+  border: 2px solid rgb(128, 127, 127);
+  color: rgb(124, 124, 124);
+  background-color: #fff;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.upload-btn-wrapper input[type='file'] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
 }
