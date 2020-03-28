@@ -2,6 +2,7 @@ export class AssignmentSubmission {
   email: string;
   files: string[]; // file location in firebase storage
   studentName: string;
+  studentId: string;
   possibleScore: string;
   score: string;
   teacherComment: string;
@@ -14,6 +15,7 @@ export class AssignmentSubmission {
     this.score = properties.score ?? '';
     this.possibleScore = properties.possibleScore ?? '';
     this.files = properties.files ?? [];
+    this.studentId = properties.studentId;
   }
 }
 
@@ -23,6 +25,7 @@ interface IAssignmentSubmission {
   studentName?: string;
   possibleScore?: string;
   score: string;
+  studentId: string;
   teacherComment?: string;
   studentComment: string;
 }

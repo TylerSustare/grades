@@ -11,19 +11,20 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: colors.blueGrey[800],
     color: '#fff',
-    flexGrow: 1
+    flexGrow: 1,
   },
   imageStyle: {
-    maxWidth: '33vw'
-  }
+    maxWidth: '33vw',
+  },
 }));
 
 interface Props extends FirebaseProps {
   assignment: string;
   files: string[];
+  studentId?: string;
 }
 
-const ShowFiles: React.FC<Props> = ({ firebase, assignment, files }) => {
+const ShowFiles: React.FC<Props> = ({ firebase, assignment, files, studentId }) => {
   const classes = useStyles();
   const { currentUser } = useContext(AuthContext);
   const [fileUrls, setFileUrls] = useState([] as fileUrlAndType[]);
@@ -33,11 +34,12 @@ const ShowFiles: React.FC<Props> = ({ firebase, assignment, files }) => {
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
     async function getFiles() {
-      const urls = await firebase.getFilesForAssignment('7th', assignment, currentUser.uid, files);
+      const uid = studentId ? studentId : currentUser.uid;
+      const urls = await firebase.getFilesForAssignment('7th', assignment, uid, files);
       setFileUrls(urls);
     }
     getFiles();
-  }, [assignment, currentUser.uid, files, firebase]);
+  }, [assignment, currentUser.uid, files, firebase, studentId]);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages({ numPages });

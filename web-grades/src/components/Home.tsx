@@ -10,19 +10,33 @@ import AssignmentSubmissionForm from './AssignmentSubmissionForm';
 
 const Home: React.FC<FirebaseProps> = ({ firebase }) => {
   const { currentUser } = useContext(AuthContext);
+  // if (!currentUser.email.includes('@saints.org')) {
+  // return (
+  // <div>
+  // <TopAppBar />
+  // <h2>Please log in with your Trinity Account '@saints.org'</h2>
+  // </div>
+  // );
+  // }
 
   return (
-    <GradingProvider>
+    <>
       <TopAppBar />
-      <div className="container">
-        <div className="left">
-          <AssignmentList />
+      <GradingProvider>
+        <div className="container">
+          <div className="left">
+            <AssignmentList />
+          </div>
+          <div className="right">
+            {currentUser.email === 'brittany.sustare@saints.org' || currentUser.email === 'darla.linn@saints.org' ? (
+              <AssignmentGrading />
+            ) : (
+              <AssignmentSubmissionForm />
+            )}
+          </div>
         </div>
-        <div className="right">
-          {currentUser.email === 'brittany.sustare@saints.org' ? <AssignmentGrading /> : <AssignmentSubmissionForm />}
-        </div>
-      </div>
-    </GradingProvider>
+      </GradingProvider>
+    </>
   );
 };
 

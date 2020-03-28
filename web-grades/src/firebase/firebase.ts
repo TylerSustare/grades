@@ -65,7 +65,7 @@ const Firebase: IFirebase = {
       uid: user.user.uid,
       displayName: user.user.displayName,
       photoURL: user.user.photoURL,
-      email: user.user.email
+      email: user.user.email,
     };
     await firebase
       .firestore()
@@ -100,10 +100,9 @@ const Firebase: IFirebase = {
         const path = `${gradeId}/${assignmentId}/${studentUid}/${i}`;
         const ref = firebase.storage().ref(path);
         const metadata = await ref.getMetadata();
-        console.log('metadata', JSON.stringify(metadata, null, 2));
         const returnObject: fileUrlAndType = {
           fileUrl: await ref.getDownloadURL(),
-          fileType: metadata?.contentType
+          fileType: metadata?.contentType,
         };
         downloadUrls.push(returnObject);
       }
@@ -197,9 +196,7 @@ const Firebase: IFirebase = {
 
     for (let i = 0; i < assignment.length; i++) {
       if (submission.email === assignment[i].email) {
-        console.log('submission.files', JSON.stringify(submission.files, null, 2));
         submission.files.push(...assignment[i].files);
-        console.log('submission.files', JSON.stringify(submission.files, null, 2));
         assignment[i] = Object.assign({}, submission);
         return firebase
           .firestore()
@@ -218,7 +215,7 @@ const Firebase: IFirebase = {
       .collection('classes')
       .doc(classId)
       .set(values);
-  }
+  },
 };
 
 export default Firebase;

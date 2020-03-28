@@ -3,11 +3,21 @@ import { withRouter, Redirect } from 'react-router';
 import { AuthContext } from './Auth';
 import { withFirebaseHOC } from '../firebase';
 import { FirebaseWithRouterProps } from '../types/PropInterfaces';
-import { Button } from '@material-ui/core';
+import { Button, makeStyles, colors } from '@material-ui/core';
 import TopAppBar from './TopAppBar';
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(1),
+    backgroundColor: colors.red[800],
+    color: colors.blueGrey[800],
+    flexGrow: 1
+  }
+}));
 
 const C: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {
+  const classes = useStyles();
   const { currentUser } = useContext(AuthContext);
+
   const handleGoogle = useCallback(async () => {
     await firebase.googleAuth();
     history.push('/');
@@ -21,11 +31,10 @@ const C: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {
     <>
       <TopAppBar />
       <div className="App">
-        <header className="App-header">
-          <Button onClick={handleGoogle} color="primary">
-            Google
-          </Button>
-        </header>
+        <h2>Please log in with your Saints Google Account</h2>
+        <Button className={classes.root} onClick={handleGoogle} color="primary">
+          Log in with Google
+        </Button>
       </div>
     </>
   );
