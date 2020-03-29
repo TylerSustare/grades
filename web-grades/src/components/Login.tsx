@@ -1,6 +1,6 @@
 import React, { useContext, useCallback } from 'react';
 import { withRouter, Redirect } from 'react-router';
-import { AuthContext } from './Auth';
+import { AuthContext } from './AuthContext';
 import { withFirebaseHOC } from '../firebase';
 import { FirebaseWithRouterProps } from '../types/PropInterfaces';
 import { Button, makeStyles, colors } from '@material-ui/core';
@@ -10,8 +10,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: colors.red[800],
     color: colors.blueGrey[800],
-    flexGrow: 1
-  }
+    flexGrow: 1,
+  },
 }));
 
 const C: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {

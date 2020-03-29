@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { AuthContext } from './Auth';
+import { AuthContext } from './AuthContext';
 import logo from './logo.svg';
 import { withFirebaseHOC } from '../firebase';
 import { FirebaseProps } from '../types/PropInterfaces';

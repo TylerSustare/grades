@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FirebaseProps } from '../types/PropInterfaces';
 import { withFirebaseHOC } from '../firebase';
-import { AuthContext } from './Auth';
+import { AuthContext } from './AuthContext';
 import { fileUrlAndType } from '../firebase/firebase';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Button, makeStyles, colors } from '@material-ui/core';

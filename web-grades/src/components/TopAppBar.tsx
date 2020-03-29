@@ -1,6 +1,6 @@
 // import MenuIcon from '@material-ui/icons/Menu';
 import React, { useContext } from 'react';
-import { AuthContext } from './Auth';
+import { AuthContext } from './AuthContext';
 import { Button, Typography, makeStyles, AppBar, Toolbar, Avatar } from '@material-ui/core';
 import { withFirebaseHOC } from '../firebase';
 import { FirebaseProps } from '../types/PropInterfaces';
@@ -9,17 +9,17 @@ const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
     color: '#333',
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   avatar: {
-    margin: theme.spacing(1)
+    margin: theme.spacing(1),
   },
   title: {
-    flexGrow: 1
-  }
+    flexGrow: 1,
+  },
 }));
 
 const TopAppBar: React.FC<FirebaseProps> = ({ firebase }) => {

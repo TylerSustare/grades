@@ -45,6 +45,7 @@ export interface IFirebase {
     assignmentId: string,
     studentEmail: string
   ) => Promise<AssignmentSubmission>;
+  createNewAssignment: (classId: string, assignmentId: string) => Promise<void>;
 }
 const Firebase: IFirebase = {
   // auth
@@ -215,6 +216,28 @@ const Firebase: IFirebase = {
       .collection('classes')
       .doc(classId)
       .set(values);
+  },
+
+  createNewAssignment: async (classId: string, assignmentId: string): Promise<void> => {
+    if (classId.length === 0 || assignmentId.length === 0) {
+      return;
+    }
+    // get assignment
+    const classDoc: firestoreDocument = await firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .get();
+
+    const classObject = classDoc.data();
+    classObject[assignmentId] = [];
+
+    // save back to database
+    return firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .set(classObject);
   },
 };
 

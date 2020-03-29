@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { v4 } from 'uuid';
 import { useForm } from 'react-hook-form';
 import { withFirebaseHOC } from '../firebase';
-import { AuthContext } from './Auth';
+import { AuthContext } from './AuthContext';
 import { FirebaseProps } from '../types/PropInterfaces';
 import { makeStyles, TextField, Button, colors, Typography, CircularProgress } from '@material-ui/core';
 import { GradingContext } from './GradingContext';

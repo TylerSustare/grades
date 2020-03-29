@@ -3,12 +3,14 @@ import { FirebaseProps } from '../types/PropInterfaces';
 import { withFirebaseHOC } from '../firebase';
 import { makeStyles, Button, colors } from '@material-ui/core';
 import { GradingContext } from './GradingContext';
+import { AuthContext } from './AuthContext';
+import AddAssignmentForm from './AddAssignmentModal';
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(3),
     fontSize: '2rem',
     backgroundColor: colors.blueGrey[800],
-    color: '#fff'
+    color: '#fff',
   },
   selected: {
     margin: theme.spacing(3),
@@ -17,12 +19,13 @@ const useStyles = makeStyles((theme) => ({
     border: 0,
     borderRadius: 3,
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-    color: '#fff'
-  }
+    color: '#fff',
+  },
 }));
 
 const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
   const { assignment, setAssignment } = useContext(GradingContext);
+  const { isTeacher } = useContext(AuthContext);
   const [assignments, setAssignments] = useState([]);
   useEffect(() => {
     async function getAssignments() {
@@ -45,6 +48,7 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
           </Button>
         );
       })}
+      {isTeacher && <AddAssignmentForm buttonClasse={classes.root} />}
     </>
   );
 };

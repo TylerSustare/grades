@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { AuthContext } from './Auth';
+import { AuthContext } from './AuthContext';
 import { withFirebaseHOC } from '../firebase';
 import { FirebaseProps } from '../types/PropInterfaces';
 import TopAppBar from './TopAppBar';
@@ -9,15 +9,15 @@ import { GradingProvider } from './GradingContext';
 import AssignmentSubmissionForm from './AssignmentSubmissionForm';
 
 const Home: React.FC<FirebaseProps> = ({ firebase }) => {
-  const { currentUser } = useContext(AuthContext);
-  // if (!currentUser.email.includes('@saints.org')) {
-  // return (
-  // <div>
-  // <TopAppBar />
-  // <h2>Please log in with your Trinity Account '@saints.org'</h2>
-  // </div>
-  // );
-  // }
+  const { isTeacher, currentUser } = useContext(AuthContext);
+  if (!currentUser.email.includes('@saints.org') && !currentUser.email.includes('sustare@gmail.com')) {
+    return (
+      <div>
+        <TopAppBar />
+        <h2>Please log in with your Trinity Account '@saints.org'</h2>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -27,13 +27,7 @@ const Home: React.FC<FirebaseProps> = ({ firebase }) => {
           <div className="left">
             <AssignmentList />
           </div>
-          <div className="right">
-            {currentUser.email === 'brittany.sustare@saints.org' || currentUser.email === 'darla.linn@saints.org' ? (
-              <AssignmentGrading />
-            ) : (
-              <AssignmentSubmissionForm />
-            )}
-          </div>
+          <div className="right">{isTeacher ? <AssignmentGrading /> : <AssignmentSubmissionForm />}</div>
         </div>
       </GradingProvider>
     </>
