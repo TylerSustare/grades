@@ -8,6 +8,7 @@ export class AssignmentSubmission {
   teacherComment: string;
   studentComment: string;
   constructor(properties: IAssignmentSubmission) {
+    // all of these exist because firestore needs vanilla js objects and Object.assign() can't use undefined fields
     this.email = properties.email ?? '';
     this.studentComment = properties.studentComment ?? '';
     this.studentName = properties.studentName ?? '';
@@ -15,17 +16,17 @@ export class AssignmentSubmission {
     this.score = properties.score ?? '';
     this.possibleScore = properties.possibleScore ?? '';
     this.files = properties.files ?? [];
-    this.studentId = properties.studentId;
+    this.studentId = properties.studentId ?? '';
   }
 }
 
 interface IAssignmentSubmission {
   email: string;
-  files: string[]; // file location in firebase storage
+  files?: string[]; // file location in firebase storage
   studentName?: string;
   possibleScore?: string;
-  score: string;
-  studentId: string;
+  score?: string;
+  studentId?: string;
   teacherComment?: string;
-  studentComment: string;
+  studentComment?: string;
 }

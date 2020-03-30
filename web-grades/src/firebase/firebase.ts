@@ -144,6 +144,9 @@ const Firebase: IFirebase = {
       .get();
 
     const values = classDoc.data(); // gets the value of the query
+    if (!values) {
+      return [];
+    }
     const assignments = Object.keys(values);
     return assignments;
   },
@@ -156,6 +159,9 @@ const Firebase: IFirebase = {
       .get();
 
     const values = classDoc.data();
+    if (!values) {
+      return [];
+    }
     const assignment = values[assignmentId];
     return assignment;
   },
@@ -222,7 +228,7 @@ const Firebase: IFirebase = {
     if (classId.length === 0 || assignmentId.length === 0) {
       return;
     }
-    // get assignment
+    // get all assignments as class object
     const classDoc: firestoreDocument = await firebase
       .firestore()
       .collection('classes')
@@ -230,7 +236,17 @@ const Firebase: IFirebase = {
       .get();
 
     const classObject = classDoc.data();
-    classObject[assignmentId] = [];
+
+    const studentsDoc: firestoreDocument = await firebase
+      .firestore()
+      .collection('users')
+      .doc(classId)
+      .get();
+
+    const studentsByClassObject = studentsDoc.data();
+    const studentsArray: [] = studentsByClassObject['students'];
+    const submissionObjectArray = studentsArray.map((s) => Object.assign({}, new AssignmentSubmission({ email: s })));
+    classObject[assignmentId] = submissionObjectArray;
 
     // save back to database
     return firebase

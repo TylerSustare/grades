@@ -5,6 +5,9 @@ import { withFirebaseHOC } from '../firebase';
 import { FirebaseWithRouterProps } from '../types/PropInterfaces';
 import { Button, makeStyles, colors } from '@material-ui/core';
 import TopAppBar from './TopAppBar';
+import trinityLogo from '../trinity.png';
+declare module '*.png';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
@@ -32,6 +35,9 @@ const C: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {
       <TopAppBar />
       <div className="App">
         <h2>Please log in with your Saints Google Account</h2>
+        <div>
+          <img src={trinityLogo} alt="trinity lutheran school logo" />
+        </div>
         <Button className={classes.root} onClick={handleGoogle} color="primary">
           Log in with Google
         </Button>

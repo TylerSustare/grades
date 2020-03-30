@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { v4 } from 'uuid';
 import { useForm } from 'react-hook-form';
 import { withFirebaseHOC } from '../firebase';
 import { AuthContext } from './AuthContext';
@@ -46,16 +45,18 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
     setIsSubmitting(true);
     const { files, score, studentComment } = values;
     const fileIds: string[] = [];
+    console.log('\n\n\n');
+    console.log('files', files);
+    console.log('\n\n\n');
     for (let index = 0; index < files.length; index++) {
-      const uuid = v4();
       const options: filePrams = {
         classId: '7th',
         assignmentId: assignment,
         studentUid: currentUser.uid,
         file: files[index],
-        fileId: uuid,
+        fileId: files[index].name,
       };
-      fileIds.push(uuid);
+      fileIds.push(files[index].name);
       await firebase.uploadFileToAssignment(options);
     }
 
@@ -73,14 +74,11 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
 
   const [fileName, setFileName] = useState('');
   const onFileChange = (e) => {
-    console.log(e.target.files);
     let name = '';
     if (e?.target?.files[0]) {
       for (const key in e.target.files) {
         if (e.target.files.hasOwnProperty(key)) {
           name += `${e.target.files[key].name},`;
-          console.log('key', key);
-          console.log('val', e.target.files[key]);
         }
       }
       setFileName(name);

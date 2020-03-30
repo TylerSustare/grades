@@ -116,7 +116,7 @@ const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, stude
               className={classes.commentField}
               error={errors.studentComment != null && errors.studentComment.message != null}
               id="studentComment-submission-field"
-              label="Comments"
+              label="Student Comment"
               variant="outlined"
               name="studentComment"
               multiline
@@ -138,7 +138,7 @@ const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, stude
               className={classes.commentField}
               error={errors.teacherComment != null && errors.teacherComment.message != null}
               id="teacherComment-submission-field"
-              label="Comments"
+              label="Comment back to Student"
               defaultValue={sub.teacherComment}
               variant="outlined"
               name="teacherComment"

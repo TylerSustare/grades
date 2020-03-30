@@ -52,6 +52,15 @@ const ShowFiles: React.FC<Props> = ({ firebase, assignment, files, studentId }) 
     <>
       {/* eslint-disable-next-line array-callback-return */}
       {fileUrls.map((file) => {
+        if (file.fileType.includes('heic')) {
+          return (
+            <div>
+              <a key={file.fileUrl} href={file.fileUrl} rel="noopener noreferrer" target="_blank">
+                download {file.fileType} file
+              </a>
+            </div>
+          );
+        }
         if (file.fileType.includes('image')) {
           return (
             <div key={file.fileUrl}>
@@ -82,6 +91,13 @@ const ShowFiles: React.FC<Props> = ({ firebase, assignment, files, studentId }) 
             </div>
           );
         }
+        return (
+          <div>
+            <a key={file.fileUrl} href={file.fileUrl} rel="noopener noreferrer" target="_blank">
+              download {file.fileType} file
+            </a>
+          </div>
+        );
       })}
     </>
   );
