@@ -95,7 +95,7 @@ const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, stude
               className={classes.scoreField}
               error={errors.score != null && errors.score.message != null}
               id="score-submission-field"
-              label="Submit Score"
+              label="Number of Incorrect"
               variant="outlined"
               name="score"
               defaultValue={sub.score}

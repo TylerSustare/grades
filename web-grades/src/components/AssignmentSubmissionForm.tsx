@@ -70,6 +70,7 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
     await firebase.submitAssignmentToClass('7th', assignment, submission);
     setFileName('');
     setIsSubmitting(false);
+    alert('Nice work! Your assignment was successfully submitted to Mrs. Sustare and Mrs. Linn :)');
   };
 
   const [fileName, setFileName] = useState('');
@@ -109,16 +110,19 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
   return (
     <>
       <h2>{assignment}</h2>
-      <h4>(remember to submit often)</h4>
-
-      {assignment && (
+      {assignment && <h4>(remember to click the "Submit Assignment" button)</h4>}
+      {!assignment ? (
+        <div>
+          <h2>Please select an assignment.</h2>
+        </div>
+      ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <TextField
               className={classes.scoreField}
               error={errors.score != null && errors.score.message != null}
               id="score-submission-field"
-              label="Submit Score"
+              label="Number of Incorrect"
               variant="outlined"
               name="score"
               InputLabelProps={{
