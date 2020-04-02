@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const C: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {
+const Login: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {
   const classes = useStyles();
   const { currentUser } = useContext(AuthContext);
 
@@ -29,7 +29,6 @@ const C: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {
   if (currentUser) {
     return <Redirect to="/" />;
   }
-
   return (
     <>
       <TopAppBar />
@@ -46,4 +45,4 @@ const C: React.FC<FirebaseWithRouterProps> = ({ firebase, history }) => {
   );
 };
 
-export default withFirebaseHOC(withRouter(C));
+export default withFirebaseHOC(withRouter(Login));

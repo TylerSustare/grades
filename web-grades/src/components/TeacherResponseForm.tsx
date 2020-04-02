@@ -48,8 +48,11 @@ interface Props extends FirebaseProps {
 }
 
 const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, studentId }) => {
+  const classes = useStyles();
   const [sub, setSub] = useState({} as AssignmentSubmission);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { handleSubmit, register, errors, setValue } = useForm();
+
   useEffect(() => {
     async function getAssignments() {
       const studentSubmission = await firebase.getAssignmentByStudentEmail('7th', assignment, email);
@@ -57,8 +60,11 @@ const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, stude
     }
     getAssignments();
   }, [assignment, email, firebase, isSubmitting]);
-  const classes = useStyles();
-  const { handleSubmit, register, errors, setValue } = useForm();
+
+  setValue('score', sub.score);
+  setValue('teacherComment', sub.teacherComment);
+  setValue('studentComment', sub.studentComment);
+
   const onSubmit = async (values) => {
     setIsSubmitting(true);
     const { score, studentComment, teacherComment } = values;
@@ -73,6 +79,7 @@ const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, stude
     await firebase.submitAssignmentToClass('7th', assignment, update);
     setIsSubmitting(false);
   };
+
   if (isSubmitting) {
     return (
       <div className={classes.loadingState}>
@@ -80,9 +87,6 @@ const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, stude
       </div>
     );
   }
-  setValue('score', sub.score);
-  setValue('teacherComment', sub.teacherComment);
-  setValue('studentComment', sub.studentComment);
   return (
     <>
       <div>

@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "grades-fd"
+    "default": "grades-fd",
+    "dev": "dev-grades-fd"
   }
 }

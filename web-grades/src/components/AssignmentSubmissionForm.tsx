@@ -38,16 +38,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
+  const classes = useStyles();
   const { currentUser } = useContext(AuthContext);
   const { handleSubmit, register, errors, setValue } = useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fileName, setFileName] = useState('');
+  const [assignmentSubmission, setAssignmentSubmission] = useState({} as AssignmentSubmission);
+  const { assignment } = useContext(GradingContext);
+
+  useEffect(() => {
+    async function getAssignments() {
+      const studentSubmission = await firebase.getAssignmentByStudentEmail('7th', assignment, currentUser.email);
+      setAssignmentSubmission(studentSubmission);
+    }
+    getAssignments();
+  }, [assignment, currentUser.email, firebase, isSubmitting]);
+
+  // set form values
+  assignmentSubmission?.score ? setValue('score', assignmentSubmission?.score) : setValue('score', '');
+  assignmentSubmission?.studentComment
+    ? setValue('studentComment', assignmentSubmission?.studentComment)
+    : setValue('studentComment', '');
+
+  // set file name on page
+  const onFileChange = (e) => {
+    let name = '';
+    if (e?.target?.files[0]) {
+      for (const key in e.target.files) {
+        if (e.target.files.hasOwnProperty(key)) {
+          name += `${e.target.files[key].name},`;
+        }
+      }
+      setFileName(name);
+    }
+  };
+
+  // submit the form
   const onSubmit = async (values) => {
     setIsSubmitting(true);
     const { files, score, studentComment } = values;
     const fileIds: string[] = [];
-    console.log('\n\n\n');
-    console.log('files', files);
-    console.log('\n\n\n');
     for (let index = 0; index < files.length; index++) {
       const options: filePrams = {
         classId: '7th',
@@ -63,6 +93,7 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
     const submission = new AssignmentSubmission({
       files: fileIds,
       score,
+      teacherComment: assignmentSubmission.teacherComment,
       studentComment,
       email: currentUser.email,
       studentId: currentUser.uid,
@@ -72,34 +103,6 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
     setIsSubmitting(false);
     alert('Nice work! Your assignment was successfully submitted to Mrs. Sustare and Mrs. Linn :)');
   };
-
-  const [fileName, setFileName] = useState('');
-  const onFileChange = (e) => {
-    let name = '';
-    if (e?.target?.files[0]) {
-      for (const key in e.target.files) {
-        if (e.target.files.hasOwnProperty(key)) {
-          name += `${e.target.files[key].name},`;
-        }
-      }
-      setFileName(name);
-    }
-  };
-
-  const [assignmentSubmission, setAssignmentSubmission] = useState({} as AssignmentSubmission);
-  const { assignment } = useContext(GradingContext);
-  useEffect(() => {
-    async function getAssignments() {
-      const studentSubmission = await firebase.getAssignmentByStudentEmail('7th', assignment, currentUser.email);
-      setAssignmentSubmission(studentSubmission);
-    }
-    getAssignments();
-  }, [assignment, currentUser.email, firebase, isSubmitting]);
-  const classes = useStyles();
-  assignmentSubmission?.score ? setValue('score', assignmentSubmission?.score) : setValue('score', '');
-  assignmentSubmission?.studentComment
-    ? setValue('studentComment', assignmentSubmission?.studentComment)
-    : setValue('studentComment', '');
   if (isSubmitting) {
     return (
       <div className={classes.loadingState}>

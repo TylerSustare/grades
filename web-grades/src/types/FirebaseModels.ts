@@ -20,7 +20,7 @@ export class AssignmentSubmission {
   }
 }
 
-interface IAssignmentSubmission {
+export interface IAssignmentSubmission {
   email: string;
   files?: string[]; // file location in firebase storage
   studentName?: string;
