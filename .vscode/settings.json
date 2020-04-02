@@ -1,0 +1,16 @@
+{
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#22e26c",
+    "titleBar.activeForeground": "#020202",
+    "titleBar.inactiveBackground": "#c9faad",
+    "titleBar.inactiveForeground": "#7e7e7e"
+  },
+  "cSpell.words": [
+    "apikey",
+    "labinstanceid",
+    "labondemand",
+    "moxios",
+    "vlab",
+    "vlabs"
+  ]
+}

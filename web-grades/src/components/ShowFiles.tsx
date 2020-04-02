@@ -54,7 +54,7 @@ const ShowFiles: React.FC<Props> = ({ firebase, assignment, files, studentId }) 
       {fileUrls.map((file) => {
         if (file.fileType.includes('heic')) {
           return (
-            <div>
+            <div key={file.fileUrl}>
               <a key={file.fileUrl} href={file.fileUrl} rel="noopener noreferrer" target="_blank">
                 download {file.fileType} file
               </a>

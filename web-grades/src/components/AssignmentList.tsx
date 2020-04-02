@@ -48,7 +48,7 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
           </Button>
         );
       })}
-      {isTeacher && <AddAssignmentForm buttonClasse={classes.root} />}
+      {isTeacher && <AddAssignmentForm />}
     </>
   );
 };

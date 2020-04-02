@@ -24,7 +24,7 @@ interface Props extends FirebaseProps {
 }
 
 const AddAssignmentForm: React.FC<Props> = ({ firebase, onSubmit }) => {
-  const { register, handleSubmit, watch, errors } = useForm();
+  const { register, handleSubmit, errors } = useForm();
   const onFormSubmit = async (data) => {
     await firebase.createNewAssignment('7th', data.assignmentName);
     if (onSubmit) {
