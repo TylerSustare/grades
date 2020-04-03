@@ -4,7 +4,7 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 import firebaseConfig from './firebaseConfig';
-import { AssignmentSubmission, IAssignmentSubmission } from '../types/FirebaseModels';
+import { AssignmentSubmission, IAssignmentSubmission, IUser } from '../types/FirebaseModels';
 // Initialize Firebase
 export const firebaseApp = firebase.initializeApp(firebaseConfig);
 
@@ -36,7 +36,7 @@ export interface IFirebase {
   uploadFileToAssignment: (options: filePrams) => Promise<void>;
   getFilesForAssignment: (gradeId: string, assignmentId: string, studentUid: string, fileIds: string[]) => Promise<any>;
   // firebase
-  createNewUser: (name: string) => Promise<void>;
+  createNewUser: (user: IUser) => Promise<void>;
   getUser: (name: string) => Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>>;
   getAssignments: (classId: string) => Promise<string[]>;
   getAssignmentSubmissions: (classId: string, assignmentId: string) => Promise<AssignmentSubmission[]>;
@@ -63,17 +63,13 @@ const Firebase: IFirebase = {
     const googleProvider = new firebase.auth.GoogleAuthProvider();
     const user = await firebase.auth().signInWithPopup(googleProvider);
     // save user in DB
-    const userStuff = {
+    const userStuff: IUser = {
       uid: user.user.uid,
       displayName: user.user.displayName,
       photoURL: user.user.photoURL,
       email: user.user.email,
     };
-    await firebase
-      .firestore()
-      .collection('users')
-      .doc(user.user.uid)
-      .set(userStuff);
+    await Firebase.createNewUser(userStuff);
     return user;
   },
 
@@ -114,15 +110,12 @@ const Firebase: IFirebase = {
   },
 
   // firestore
-  createNewUser: (uid: string): Promise<void> => {
-    if (uid.length === 0) {
-      return;
-    }
-    return firebase
+  createNewUser: async (user: IUser): Promise<void> => {
+    await firebase
       .firestore()
       .collection('users')
-      .doc(uid)
-      .set({ uid });
+      .doc(user.uid)
+      .set(user);
   },
 
   getUser: (uid: string): Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>> => {
@@ -188,7 +181,7 @@ const Firebase: IFirebase = {
 
       return new AssignmentSubmission(submissionQuery.docs[0].data() as IAssignmentSubmission);
     } catch (error) {
-      console.error(error);
+      console.error('error', error);
       return {} as AssignmentSubmission;
     }
   },
@@ -235,12 +228,12 @@ const Firebase: IFirebase = {
     }
     const studentsDoc: firestoreDocument = await firebase
       .firestore()
-      .collection('users')
+      .collection('classes')
       .doc(classId)
       .get();
 
-    const studentsByClassObject = studentsDoc.data();
-    const studentsArray: [] = studentsByClassObject['students'];
+    const classObject = studentsDoc.data();
+    const studentsArray: [] = classObject['students'];
     const submissionObjectArray = studentsArray.map((s) => Object.assign({}, new AssignmentSubmission({ email: s })));
 
     // create document
