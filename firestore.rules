@@ -1,25 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
+  // match /{document=**} { some super user at some point }
+    match /classes/{classDoc}/{document=**} {
+    // if the token with the email coming in matches the email of the teacher on the class doc and the email matches the document we have by auth uid
       allow read, write: 
-      if // TODO: get from /classes/{classDoc}.data.teachers
-      request.auth.token.email == 'brittany.sustare@saints.org'
-        || request.auth.token.email == 'darla.linn@saints.org';
+      if request.auth != null 
+        && request.auth.token.email in get(/databases/$(database)/documents/classes/$(classDoc)).data.teachers
+        && request.auth.token.email == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email;
     }
     
     match /classes/{classDoc}/assignments/{doc}{
-      allow read: if request.auth.uid != null;
+      allow read: if request.auth != null;
     }
-    
-    match /classes/{classDoc}/assignments/{doc}/submissions/{d}{
+    match /classes/{classDoc}/assignments/{assignmentDoc}/submissions/{subDoc}{
       allow read, write: 
-      if request.auth.uid == d;
+      if 
+      // this is the `resource` because you don't need to "get" a doc, the "resource" is the subDoc document
+      request.auth != null
+        && request.auth.token.email == resource.data.email;
     }
     
     match /users/{userDoc}{
       allow read, write:
-      if request.auth.uid == userDoc;
+      if request.auth != null
+        && request.auth.uid == userDoc;
     }
   }
 }
