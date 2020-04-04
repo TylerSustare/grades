@@ -33,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
   button: {
     display: 'block',
     margin: theme.spacing(1),
-    backgroundColor: colors.blueGrey[800],
-    color: '#fff',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.text.primary,
   },
   loadingState: {
     margin: theme.spacing(4),

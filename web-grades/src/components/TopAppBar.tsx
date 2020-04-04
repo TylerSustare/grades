@@ -34,7 +34,7 @@ const TopAppBar: React.FC<FirebaseProps> = ({ firebase }) => {
         {currentUser && <Avatar className={classes.avatar} alt={currentUser.displayName} src={currentUser.photoURL} />}
         {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"> <MenuIcon /> </IconButton> */}
         <Typography variant="h6" className={classes.title}>
-          {currentUser ? currentUser.email : ''} 7th Grades
+          {currentUser ? currentUser.email : ''} Assignments
         </Typography>
         {currentUser ? (
           <Button onClick={() => firebase.signOut()} color="inherit">

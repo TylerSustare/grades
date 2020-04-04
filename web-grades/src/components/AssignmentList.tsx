@@ -19,8 +19,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(2),
     fontSize: '1.4rem',
-    backgroundColor: colors.blueGrey[800],
-    color: '#fff',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.text.primary,
   },
   selected: {
     margin: theme.spacing(2),

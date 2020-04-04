@@ -15,10 +15,12 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <Router>
-          <Route exact path="/login" component={Login} />
-          <PrivateRoute exact path="/" component={Home} />
-        </Router>
+        <div className="container">
+          <Router>
+            <Route exact path="/login" component={Login} />
+            <PrivateRoute exact path="/" component={Home} />
+          </Router>
+        </div>
       </AuthProvider>
     </ThemeProvider>
   );
