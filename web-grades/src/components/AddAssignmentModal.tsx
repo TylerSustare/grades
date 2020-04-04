@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(2, 4, 3),
     },
     buttonStyle: {
-      margin: theme.spacing(3),
-      fontSize: '2rem',
+      margin: theme.spacing(2),
+      fontSize: '1.4rem',
       backgroundColor: colors.blueGrey[800],
       color: '#fff',
     },

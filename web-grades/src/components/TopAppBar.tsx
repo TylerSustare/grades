@@ -20,13 +20,16 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
+  appBar: {
+    paddingTop: theme.spacing(1),
+  },
 }));
 
 const TopAppBar: React.FC<FirebaseProps> = ({ firebase }) => {
   const classes = useStyles();
   const { currentUser } = useContext(AuthContext);
   return (
-    <AppBar position="static">
+    <AppBar className={classes.appBar} position="static">
       <Toolbar>
         {currentUser && <Avatar className={classes.avatar} alt={currentUser.displayName} src={currentUser.photoURL} />}
         {/* <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu"> <MenuIcon /> </IconButton> */}

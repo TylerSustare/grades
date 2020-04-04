@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   commentField: {
     '& > *': {
       margin: theme.spacing(1),
-      width: '45vw',
+      width: '70vw',
     },
   },
   button: {

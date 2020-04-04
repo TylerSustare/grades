@@ -111,22 +111,14 @@ const Firebase: IFirebase = {
 
   // firestore
   createNewUser: async (user: IUser): Promise<void> => {
-    await firebase
-      .firestore()
-      .collection('users')
-      .doc(user.uid)
-      .set(user);
+    await firebase.firestore().collection('users').doc(user.uid).set(user);
   },
 
   getUser: (uid: string): Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>> => {
     if (uid.length === 0) {
       return;
     }
-    return firebase
-      .firestore()
-      .collection('users')
-      .doc(uid)
-      .get();
+    return firebase.firestore().collection('users').doc(uid).get();
   },
 
   getAssignments: async (classId: string): Promise<string[]> => {
@@ -226,11 +218,7 @@ const Firebase: IFirebase = {
     if (!classId || !assignmentId) {
       return;
     }
-    const studentsDoc: firestoreDocument = await firebase
-      .firestore()
-      .collection('classes')
-      .doc(classId)
-      .get();
+    const studentsDoc: firestoreDocument = await firebase.firestore().collection('classes').doc(classId).get();
 
     const classObject = studentsDoc.data();
     const studentsArray: [] = classObject['students'];
