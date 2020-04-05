@@ -34,7 +34,7 @@ const AssignmentGrading: React.FC<FirebaseProps> = ({ firebase }) => {
       {assignment && assignmentSubmissions && assignmentSubmissions.length > 0 ? (
         assignmentSubmissions.map((a) => {
           return (
-            <Card className={classes.root}>
+            <Card key={a.email} className={classes.root}>
               <TeacherResponseForm
                 key={`${assignment}-${a.email}`}
                 assignment={assignment}

@@ -37,6 +37,7 @@
   align-items: center;
 }
 .upload-btn-wrapper {
+  margin: 0.4rem;
   position: relative;
   overflow: hidden;
   display: inline-block;

@@ -1,10 +1,9 @@
-import { red } from '@material-ui/core/colors';
 import { createMuiTheme } from '@material-ui/core/styles';
-import { dark } from '@material-ui/core/styles/createPalette';
 
 // A custom theme for this app
 const theme = createMuiTheme({
   palette: {
+    type: 'dark',
     primary: {
       main: '#002952',
     },
@@ -17,7 +16,6 @@ const theme = createMuiTheme({
     // background: {
     // default: '#000',
     // },
-    type: 'dark',
   },
 });
 

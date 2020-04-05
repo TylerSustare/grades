@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { withFirebaseHOC } from '../firebase';
-import { colors, Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import AddAssignmentForm from './AddAssignmentForm';
 
 function getModalStyle() {
@@ -27,10 +27,10 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(2, 4, 3),
     },
     buttonStyle: {
-      margin: theme.spacing(2),
+      marginTop: theme.spacing(2),
       fontSize: '1.4rem',
-      backgroundColor: colors.blueGrey[800],
-      color: '#fff',
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.text.primary,
     },
   })
 );

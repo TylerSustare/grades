@@ -4,7 +4,6 @@ import { withFirebaseHOC } from '../firebase';
 import {
   makeStyles,
   Button,
-  colors,
   ExpansionPanel,
   ExpansionPanelSummary,
   Typography,
@@ -14,6 +13,7 @@ import { GradingContext } from './GradingContext';
 import { AuthContext } from './AuthContext';
 import AddAssignmentForm from './AddAssignmentModal';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { IDisplayAssignment, IGroupAssignmentsByDueAtLocalDateString } from '../types/FirebaseModels';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,48 +40,70 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     padding: 0,
   },
+  container: {
+    margin: theme.spacing(2),
+  },
 }));
 
 const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
   const { assignment, setAssignment } = useContext(GradingContext);
   const { isTeacher } = useContext(AuthContext);
-  const [assignments, setAssignments] = useState([]);
+  const [assignmentsByDueAt, setAssignmentsByDueAt] = useState({} as IGroupAssignmentsByDueAtLocalDateString);
   useEffect(() => {
     async function getAssignments() {
-      const assignments = await firebase.getAssignments('7th');
-      setAssignments(assignments);
+      // TODO: Send in ascending or descending as prop
+      const byDueAt = await firebase.getAssignments('7th', 'asc');
+      setAssignmentsByDueAt(byDueAt);
     }
     getAssignments();
   }, [firebase]);
   const classes = useStyles();
   return (
-    <>
-      <ExpansionPanel>
-        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-          <Typography className={classes.heading}>Expansion Panel 1</Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <ul className={classes.list}>
-            {assignments.map((a) => {
-              return a === assignment ? (
-                <li>
-                  <Button className={classes.selected} key={a} onClick={() => setAssignment(a)}>
-                    {a}
-                  </Button>
-                </li>
-              ) : (
-                <li>
-                  <Button className={classes.root} key={a} onClick={() => setAssignment(a)}>
-                    {a}
-                  </Button>
-                </li>
-              );
-            })}
-          </ul>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+    <div className={classes.container}>
+      <h2>Assignments By Due Date</h2>
+      {Object.keys(assignmentsByDueAt).map((dueAtLocalString) => (
+        <ExpansionPanel key={dueAtLocalString}>
+          <ExpansionPanelSummary
+            key={dueAtLocalString}
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography key={dueAtLocalString} className={classes.heading}>
+              {dueAtLocalString}
+            </Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails key={dueAtLocalString}>
+            <ul className={classes.list}>
+              {assignmentsByDueAt[dueAtLocalString].map((assignmentObject: IDisplayAssignment) => {
+                return assignmentObject.name === assignment ? (
+                  <li key={assignmentObject.name}>
+                    <Button
+                      className={classes.selected}
+                      key={assignmentObject.name}
+                      onClick={() => setAssignment(assignmentObject.name)}
+                    >
+                      {assignmentObject.name}
+                    </Button>
+                  </li>
+                ) : (
+                  <li key={assignmentObject.name}>
+                    <Button
+                      className={classes.root}
+                      key={assignmentObject.name}
+                      onClick={() => setAssignment(assignmentObject.name)}
+                    >
+                      {assignmentObject.name}
+                    </Button>
+                  </li>
+                );
+              })}
+            </ul>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      ))}
       {isTeacher && <AddAssignmentForm />}
-    </>
+    </div>
   );
 };
 

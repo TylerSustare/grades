@@ -1,7 +1,8 @@
 export class AssignmentSubmission {
   email: string;
   files: string[]; // file location in firebase storage
-  studentName: string;
+  studentFirstName: string;
+  studentLastName: string;
   studentId: string;
   possibleScore: string;
   score: string;
@@ -11,7 +12,8 @@ export class AssignmentSubmission {
     // all of these exist because firestore needs vanilla js objects and Object.assign() can't use undefined fields
     this.email = properties.email ?? '';
     this.studentComment = properties.studentComment ?? '';
-    this.studentName = properties.studentName ?? '';
+    this.studentFirstName = properties.studentFirstName ?? '';
+    this.studentLastName = properties.studentLastName ?? '';
     this.teacherComment = properties.teacherComment ?? '';
     this.score = properties.score ?? '';
     this.possibleScore = properties.possibleScore ?? '';
@@ -23,7 +25,8 @@ export class AssignmentSubmission {
 export interface IAssignmentSubmission {
   email: string;
   files?: string[]; // file location in firebase storage
-  studentName?: string;
+  studentFirstName?: string;
+  studentLastName?: string;
   possibleScore?: string;
   score?: string;
   studentId?: string;
@@ -36,4 +39,20 @@ export interface IUser {
   displayName: string;
   photoURL: string;
   email: string;
+}
+
+export interface IFirebaseAssignment {
+  dueAt: firebase.firestore.Timestamp;
+  createdAt: firebase.firestore.Timestamp;
+  name: string;
+}
+
+export interface IDisplayAssignment {
+  dueAt: string;
+  createdAt: string;
+  name: string;
+}
+
+export interface IGroupAssignmentsByDueAtLocalDateString {
+  [key: string]: IDisplayAssignment[];
 }

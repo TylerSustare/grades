@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withFirebaseHOC } from '../firebase';
 import { FirebaseProps } from '../types/PropInterfaces';
-import { makeStyles, TextField, colors, Button, CircularProgress } from '@material-ui/core';
+import { makeStyles, TextField, Button, CircularProgress } from '@material-ui/core';
 import { AssignmentSubmission } from '../types/FirebaseModels';
 import { useForm } from 'react-hook-form';
 import ShowFiles from './ShowFiles';

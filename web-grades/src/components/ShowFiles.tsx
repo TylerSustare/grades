@@ -4,13 +4,13 @@ import { withFirebaseHOC } from '../firebase';
 import { AuthContext } from './AuthContext';
 import { fileUrlAndType } from '../firebase/firebase';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { Button, makeStyles, colors } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   pageButtons: {
     margin: theme.spacing(1),
-    backgroundColor: colors.blueGrey[800],
-    color: '#fff',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.text.primary,
     flexGrow: 1,
   },
   imageStyle: {
