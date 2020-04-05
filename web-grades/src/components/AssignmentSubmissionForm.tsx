@@ -79,32 +79,42 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
   // submit the form
   const onSubmit = async (values) => {
     setIsSubmitting(true);
-    const { files, score, studentComment } = values;
-    const fileIds: string[] = [];
-    for (let index = 0; index < files.length; index++) {
-      const options: filePrams = {
-        classId: '7th',
-        assignmentId: assignment,
-        studentUid: currentUser.uid,
-        file: files[index],
-        fileId: files[index].name,
-      };
-      fileIds.push(files[index].name);
-      await firebase.uploadFileToAssignment(options);
-    }
+    try {
+      const { files, score, studentComment } = values;
+      const fileIds: string[] = [];
+      for (let index = 0; index < files.length; index++) {
+        const options: filePrams = {
+          classId: '7th',
+          assignmentId: assignment,
+          studentUid: currentUser.uid,
+          file: files[index],
+          fileId: files[index].name,
+        };
+        fileIds.push(files[index].name);
+        await firebase.uploadFileToAssignment(options);
+      }
 
-    const submission = new AssignmentSubmission({
-      files: fileIds,
-      score,
-      teacherComment: assignmentSubmission.teacherComment,
-      studentComment,
-      email: currentUser.email,
-      studentId: currentUser.uid,
-    });
-    await firebase.submitAssignmentToClass('7th', assignment, submission);
-    setFileName('');
-    setIsSubmitting(false);
-    alert('Nice work! Your assignment was successfully submitted to Mrs. Sustare and Mrs. Linn :)');
+      const submission = new AssignmentSubmission({
+        files: fileIds,
+        score,
+        teacherComment: assignmentSubmission.teacherComment,
+        studentComment,
+        email: currentUser.email,
+        studentId: currentUser.uid,
+      });
+      await firebase.submitAssignmentToClass('7th', assignment, submission);
+      setFileName('');
+      alert('Nice work! Your assignment was successfully submitted to Mrs. Sustare and Mrs. Linn :)');
+    } catch (error) {
+      alert(
+        `There was an error submitting your assignment. Please try again.
+
+Make sure you are using your school email address to submit the assignment.
+If you feel this is an error, please inform your teacher.`
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   if (isSubmitting) {
     return (

@@ -169,12 +169,7 @@ const Firebase: IFirebase = {
       .orderBy('studentLastName')
       .get();
 
-    console.log(
-      'docs',
-      submissionQuery.docs.map((d) => d.data())
-    );
-    const subs = submissionQuery.docs.map((d) => new AssignmentSubmission(d.data() as IAssignmentSubmission));
-    return subs;
+    return submissionQuery.docs.map((d) => new AssignmentSubmission(d.data() as IAssignmentSubmission));
   },
 
   getAssignmentByStudentEmail: async (
@@ -247,11 +242,16 @@ const Firebase: IFirebase = {
     const studentsDoc: firestoreDocument = await firebase.firestore().collection('classes').doc(classId).get();
 
     const classObject = studentsDoc.data();
-    const studentsArray: [] = classObject['students'];
-    const submissionObjectArray = studentsArray.map((s: any) =>
+    const studentsByEmailObject = classObject['students'];
+    const studentsEmailArray: string[] = Object.keys(studentsByEmailObject);
+    const submissionObjectArray = studentsEmailArray.map((email: string) =>
       Object.assign(
         {},
-        new AssignmentSubmission({ email: s.email, studentFirstName: s.firstName, studentLastName: s.lastName })
+        new AssignmentSubmission({
+          email: email,
+          studentFirstName: studentsByEmailObject[email].firstName,
+          studentLastName: studentsByEmailObject[email].lastName,
+        })
       )
     );
 

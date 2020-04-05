@@ -17,14 +17,14 @@ import { IDisplayAssignment, IGroupAssignmentsByDueAtLocalDateString } from '../
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(2),
-    fontSize: '1.4rem',
+    margin: theme.spacing(1),
+    fontSize: '1.2rem',
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.text.primary,
   },
   selected: {
-    margin: theme.spacing(2),
-    fontSize: '2rem',
+    margin: theme.spacing(1),
+    fontSize: '1.4rem',
     background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
     border: 0,
     borderRadius: 3,
