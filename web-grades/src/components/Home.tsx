@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import { AuthContext } from './AuthContext';
-import { withFirebaseHOC } from '../firebase';
 import { FirebaseProps } from '../types/PropInterfaces';
 import TopAppBar from './TopAppBar';
 import AssignmentList from './AssignmentList';
 import AssignmentGrading from './AssignmentGrading';
 import { GradingProvider } from './GradingContext';
 import AssignmentSubmissionForm from './AssignmentSubmissionForm';
+import Grid from '@material-ui/core/Grid';
 
-const Home: React.FC<FirebaseProps> = ({ firebase }) => {
+const Home: React.FC<FirebaseProps> = () => {
   const { isTeacher, currentUser } = useContext(AuthContext);
   if (!currentUser.email.includes('@saints.org') && !currentUser.email.includes('sustare@gmail.com')) {
     return (
@@ -20,18 +20,18 @@ const Home: React.FC<FirebaseProps> = ({ firebase }) => {
   }
 
   return (
-    <>
-      <TopAppBar />
-      <GradingProvider>
-        <div className="container">
-          <div className="left">
-            <AssignmentList />
-          </div>
-          <div className="right">{isTeacher ? <AssignmentGrading /> : <AssignmentSubmissionForm />}</div>
-        </div>
-      </GradingProvider>
-    </>
+    <GradingProvider>
+      <Grid container spacing={2}>
+        <TopAppBar />
+        <Grid item xs={12} sm={12} md={3}>
+          <AssignmentList />
+        </Grid>
+        <Grid item xs={12} sm={12} md={9}>
+          {isTeacher ? <AssignmentGrading /> : <AssignmentSubmissionForm />}
+        </Grid>
+      </Grid>
+    </GradingProvider>
   );
 };
 
-export default withFirebaseHOC(Home);
+export default Home;

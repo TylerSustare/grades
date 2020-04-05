@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withFirebaseHOC } from '../firebase';
 import { FirebaseProps } from '../types/PropInterfaces';
-import { makeStyles, TextField, colors, Button, CircularProgress } from '@material-ui/core';
+import { makeStyles, TextField, Button, CircularProgress } from '@material-ui/core';
 import { AssignmentSubmission } from '../types/FirebaseModels';
 import { useForm } from 'react-hook-form';
 import ShowFiles from './ShowFiles';
@@ -27,14 +27,14 @@ const useStyles = makeStyles((theme) => ({
   commentField: {
     '& > *': {
       margin: theme.spacing(1),
-      width: '45vw',
+      width: '70vw',
     },
   },
   button: {
     display: 'block',
     margin: theme.spacing(1),
-    backgroundColor: colors.blueGrey[800],
-    color: '#fff',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.text.primary,
   },
   loadingState: {
     margin: theme.spacing(4),

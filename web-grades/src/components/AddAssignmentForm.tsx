@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { withFirebaseHOC } from '../firebase';
-import { TextField, Button, makeStyles, colors } from '@material-ui/core';
+import { TextField, Button, makeStyles } from '@material-ui/core';
 import { FirebaseProps } from '../types/PropInterfaces';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
 const useStyles = makeStyles((theme) => ({
-  nameField: {
+  scoreField: {
     '& > *': {
       margin: theme.spacing(1),
       width: '25ch',
@@ -14,8 +16,8 @@ const useStyles = makeStyles((theme) => ({
   button: {
     display: 'block',
     margin: theme.spacing(1),
-    backgroundColor: colors.blueGrey[800],
-    color: '#fff',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -24,9 +26,13 @@ interface Props extends FirebaseProps {
 }
 
 const AddAssignmentForm: React.FC<Props> = ({ firebase, onSubmit }) => {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+  };
   const { register, handleSubmit, errors } = useForm();
   const onFormSubmit = async (data) => {
-    await firebase.createNewAssignment('7th', data.assignmentName);
+    await firebase.createNewAssignment('7th', data.assignmentName, selectedDate);
     if (onSubmit) {
       onSubmit();
     }
@@ -36,29 +42,44 @@ const AddAssignmentForm: React.FC<Props> = ({ firebase, onSubmit }) => {
   const classes = useStyles();
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)}>
-      <div>
-        <TextField
-          className={classes.nameField}
-          error={errors.assignmentName != null && errors.assignmentName.message != null}
-          id="assignmentName-submission-field"
-          label="New Assignment Name"
-          variant="outlined"
-          name="assignmentName"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          inputRef={register({
-            required: 'Required',
-          })}
-        />
-        {errors.assignmentName && errors.assignmentName.message}
-      </div>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <form onSubmit={handleSubmit(onFormSubmit)}>
+        <div>
+          <TextField
+            className={classes.scoreField}
+            error={errors.assignmentName != null && errors.assignmentName.message != null}
+            id="assignmentName-submission-field"
+            label="New Assignment Name"
+            variant="outlined"
+            name="assignmentName"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputRef={register({
+              required: 'Required',
+            })}
+          />
+          {errors.assignmentName && errors.assignmentName.message}
+          <KeyboardDatePicker
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            margin="normal"
+            id="date-picker-inline"
+            label="Date picker inline"
+            value={selectedDate}
+            onChange={handleDateChange}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+          />
+        </div>
 
-      <Button type="submit" className={classes.button}>
-        Create Assignment
-      </Button>
-    </form>
+        <Button type="submit" className={classes.button}>
+          Create Assignment
+        </Button>
+      </form>
+    </MuiPickersUtilsProvider>
   );
 };
 
