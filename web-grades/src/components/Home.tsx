@@ -7,14 +7,17 @@ import AssignmentGrading from './AssignmentGrading';
 import { GradingProvider } from './GradingContext';
 import AssignmentSubmissionForm from './AssignmentSubmissionForm';
 import Grid from '@material-ui/core/Grid';
+import { TeacherContext } from './TeacherContext';
 
 const Home: React.FC<FirebaseProps> = () => {
-  const { isTeacher, currentUser } = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
+  const { isTeacher } = useContext(TeacherContext);
+  // TODO: use `org` emails on school/organization level
   if (!currentUser.email.includes('@saints.org') && !currentUser.email.includes('sustare@gmail.com')) {
     return (
       <div>
         <TopAppBar />
-        <h2>Please log in with your Trinity Account '@saints.org'</h2>
+        <h2>Please log in with your School Account</h2>
       </div>
     );
   }

@@ -10,7 +10,7 @@ import {
   ExpansionPanelDetails,
 } from '@material-ui/core';
 import { GradingContext } from './GradingContext';
-import { AuthContext } from './AuthContext';
+import { TeacherContext } from './TeacherContext';
 import AddAssignmentForm from './AddAssignmentModal';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { IDisplayAssignment, IGroupAssignmentsByDueAtLocalDateString } from '../types/FirebaseModels';
@@ -46,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
-  const { assignment, setAssignment } = useContext(GradingContext);
-  const { isTeacher } = useContext(AuthContext);
+  const { assignmentId, setAssignmentId } = useContext(GradingContext);
+  const { isTeacher } = useContext(TeacherContext);
   const [assignmentsByDueAt, setAssignmentsByDueAt] = useState({} as IGroupAssignmentsByDueAtLocalDateString);
   useEffect(() => {
     async function getAssignments() {
@@ -76,12 +76,12 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
           <ExpansionPanelDetails key={dueAtLocalString}>
             <ul className={classes.list}>
               {assignmentsByDueAt[dueAtLocalString].map((assignmentObject: IDisplayAssignment) => {
-                return assignmentObject.name === assignment ? (
+                return assignmentObject.name === assignmentId ? (
                   <li key={assignmentObject.name}>
                     <Button
                       className={classes.selected}
                       key={assignmentObject.name}
-                      onClick={() => setAssignment(assignmentObject.name)}
+                      onClick={() => setAssignmentId(assignmentObject.name)}
                     >
                       {assignmentObject.name}
                     </Button>
@@ -91,7 +91,7 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
                     <Button
                       className={classes.root}
                       key={assignmentObject.name}
-                      onClick={() => setAssignment(assignmentObject.name)}
+                      onClick={() => setAssignmentId(assignmentObject.name)}
                     >
                       {assignmentObject.name}
                     </Button>

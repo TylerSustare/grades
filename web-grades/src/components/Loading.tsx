@@ -1,5 +1,4 @@
 import React from 'react';
-import { withFirebaseHOC } from '../firebase';
 import { FirebaseProps } from '../types/PropInterfaces';
 import LoadingAppBar from './LoadingAppBar';
 import { CircularProgress, colors, makeStyles } from '@material-ui/core';
@@ -16,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LoadingPage: React.FC<FirebaseProps> = () => {
+export const LoadingPage: React.FC<FirebaseProps> = () => {
   const classes = useStyles();
   return (
     <>
@@ -29,6 +28,3 @@ const LoadingPage: React.FC<FirebaseProps> = () => {
     </>
   );
 };
-
-export default LoadingPage;
-export { LoadingPage };

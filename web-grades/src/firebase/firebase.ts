@@ -11,6 +11,8 @@ import {
   IDisplayAssignment,
   IFirebaseAssignment,
   IGroupAssignmentsByDueAtLocalDateString,
+  filePrams,
+  fileUrlAndType,
 } from '../types/FirebaseModels';
 import groupBy from 'lodash/groupBy';
 
@@ -20,19 +22,6 @@ export const firebaseApp = firebase.initializeApp(firebaseConfig);
 export type firebaseUser = firebase.User;
 type firestoreDocument = firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>;
 type firestoreQuery = firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
-
-export interface filePrams {
-  classId: string;
-  assignmentId: string;
-  studentUid: string;
-  file: File;
-  fileId: string;
-}
-
-export interface fileUrlAndType {
-  fileUrl: string;
-  fileType: string | undefined;
-}
 
 export interface IFirebase {
   // auth
@@ -56,7 +45,9 @@ export interface IFirebase {
     studentEmail: string
   ) => Promise<AssignmentSubmission>;
   createNewAssignment: (classId: string, assignmentId: string, dueDate: Date) => Promise<void>;
+  getTeacherList: (classId: string) => Promise<string[]>;
 }
+
 const Firebase: IFirebase = {
   // auth
   loginWithEmail: (email: string, password: string): Promise<firebase.auth.UserCredential> =>
@@ -256,13 +247,12 @@ const Firebase: IFirebase = {
     );
 
     // create document
-    await firebase
-      .firestore()
-      .collection('classes')
-      .doc(classId)
-      .collection('assignments')
-      .doc(assignmentId)
-      .set({ createdAt: new Date(), dueAt: dueDate, name: assignmentId });
+    await firebase.firestore().collection('classes').doc(classId).collection('assignments').doc(assignmentId).set({
+      isVisibleToStudents: true, // TODO: make this an option
+      createdAt: new Date(),
+      dueAt: dueDate,
+      name: assignmentId,
+    });
 
     // add submission for each student
     for (let i = 0; i < submissionObjectArray.length; i++) {
@@ -275,6 +265,12 @@ const Firebase: IFirebase = {
         .collection('submissions')
         .add(submissionObjectArray[i]);
     }
+  },
+
+  getTeacherList: async (classId: string): Promise<string[]> => {
+    const classDoc: firestoreDocument = await firebase.firestore().collection('classes').doc(classId).get();
+    const teachersObject = classDoc.data().teachers;
+    return Object.keys(teachersObject);
   },
 };
 
