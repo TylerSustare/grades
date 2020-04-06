@@ -6,7 +6,7 @@ import { FirebaseProps } from '../types/PropInterfaces';
 import { makeStyles, TextField, Button, Typography, CircularProgress, Card } from '@material-ui/core';
 import { GradingContext } from './GradingContext';
 import { AssignmentSubmission } from '../types/FirebaseModels';
-import { filePrams } from '../firebase/firebase';
+import { filePrams } from '../types/FirebaseModels';
 import ShowFiles from './ShowFiles';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,15 +47,15 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState('');
   const [assignmentSubmission, setAssignmentSubmission] = useState({} as AssignmentSubmission);
-  const { assignment } = useContext(GradingContext);
+  const { assignmentId } = useContext(GradingContext);
 
   useEffect(() => {
     async function getAssignments() {
-      const studentSubmission = await firebase.getAssignmentByStudentEmail('7th', assignment, currentUser.email);
+      const studentSubmission = await firebase.getAssignmentByStudentEmail('7th', assignmentId, currentUser.email);
       setAssignmentSubmission(studentSubmission);
     }
     getAssignments();
-  }, [assignment, currentUser.email, firebase, isSubmitting]);
+  }, [assignmentId, currentUser.email, firebase, isSubmitting]);
 
   // set form values
   assignmentSubmission?.score ? setValue('score', assignmentSubmission?.score) : setValue('score', '');
@@ -85,7 +85,7 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
       for (let index = 0; index < files.length; index++) {
         const options: filePrams = {
           classId: '7th',
-          assignmentId: assignment,
+          assignmentId: assignmentId,
           studentUid: currentUser.uid,
           file: files[index],
           fileId: files[index].name,
@@ -102,7 +102,7 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
         email: currentUser.email,
         studentId: currentUser.uid,
       });
-      await firebase.submitAssignmentToClass('7th', assignment, submission);
+      await firebase.submitAssignmentToClass('7th', assignmentId, submission);
       setFileName('');
       alert('Nice work! Your assignment was successfully submitted to Mrs. Sustare and Mrs. Linn :)');
     } catch (error) {
@@ -125,10 +125,10 @@ If you feel this is an error, please inform your teacher.`
   }
   return (
     <div className={classes.card}>
-      <h1>{assignment}</h1>
+      <h1>{assignmentId}</h1>
       <Card className={classes.card}>
-        {assignment && <h4>(remember to click the "Submit Assignment" button)</h4>}
-        {!assignment ? (
+        {assignmentId && <h4>(remember to click the "Submit Assignment" button)</h4>}
+        {!assignmentId ? (
           <div>
             <h2>Please select an assignment.</h2>
           </div>
@@ -179,14 +179,14 @@ If you feel this is an error, please inform your teacher.`
               <input type="file" name="files" ref={register()} multiple onChange={onFileChange} />
               <span>{fileName}</span>
             </div>
-            <ShowFiles assignment={assignment} files={assignmentSubmission?.files} />
+            <ShowFiles assignment={assignmentId} files={assignmentSubmission?.files} />
 
             <Button type="submit" className={classes.button}>
               Submit Assignment
             </Button>
           </form>
         )}
-        {assignment && (
+        {assignmentId && (
           <>
             <h2>Teacher Feedback</h2>
             <Typography className={classes.root} color="textPrimary">

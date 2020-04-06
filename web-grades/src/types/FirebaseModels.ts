@@ -56,3 +56,16 @@ export interface IDisplayAssignment {
 export interface IGroupAssignmentsByDueAtLocalDateString {
   [key: string]: IDisplayAssignment[];
 }
+
+export interface filePrams {
+  classId: string;
+  assignmentId: string;
+  studentUid: string;
+  file: File;
+  fileId: string;
+}
+
+export interface fileUrlAndType {
+  fileUrl: string;
+  fileType: string | undefined;
+}

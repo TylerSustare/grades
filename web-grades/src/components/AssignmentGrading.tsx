@@ -20,24 +20,24 @@ const AssignmentGrading: React.FC<FirebaseProps> = ({ firebase }) => {
   const classes = useStyles();
   const [assignmentSubmissions, setAssignmentSubmissions] = useState([] as AssignmentSubmission[]);
 
-  const { assignment } = useContext(GradingContext);
+  const { assignmentId } = useContext(GradingContext);
   useEffect(() => {
     async function getAssignments() {
-      const assignments = await firebase.getAssignmentSubmissions('7th', assignment);
+      const assignments = await firebase.getAssignmentSubmissions('7th', assignmentId);
       setAssignmentSubmissions(assignments);
     }
     getAssignments();
-  }, [firebase, assignment]);
+  }, [firebase, assignmentId]);
   return (
     <>
-      <h1 className={classes.title}>{assignment}</h1>
-      {assignment && assignmentSubmissions && assignmentSubmissions.length > 0 ? (
+      <h1 className={classes.title}>{assignmentId}</h1>
+      {assignmentId && assignmentSubmissions && assignmentSubmissions.length > 0 ? (
         assignmentSubmissions.map((a) => {
           return (
             <Card key={a.email} className={classes.root}>
               <TeacherResponseForm
-                key={`${assignment}-${a.email}`}
-                assignment={assignment}
+                key={`${assignmentId}-${a.email}`}
+                assignment={assignmentId}
                 email={a.email}
                 score={a.score}
                 studentComment={a.studentComment}

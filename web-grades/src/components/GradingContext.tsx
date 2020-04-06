@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
 
 export const GradingContext = React.createContext({
-  assignment: '',
-  setAssignment: (newAssignment: string): void => {}
+  schoolId: '',
+  setSchoolId: (newClassId: string): void => {},
+  classId: '',
+  setClassId: (newSchoolId: string): void => {},
+  assignmentId: '',
+  setAssignmentId: (newAssignmentId: string): void => {},
 });
 GradingContext.displayName = 'GradingContext';
 
 export const GradingProvider = ({ children }) => {
-  const [assignment, setAssignment] = useState('');
+  const [assignmentId, setAssignmentId] = useState('');
+  const [classId, setClassId] = useState('');
+  const [schoolId, setSchoolId] = useState('');
   return (
     <GradingContext.Provider
       value={{
-        assignment,
-        setAssignment
+        schoolId,
+        setSchoolId,
+        classId,
+        setClassId,
+        assignmentId,
+        setAssignmentId,
       }}
     >
       {children}
