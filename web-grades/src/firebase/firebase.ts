@@ -211,6 +211,9 @@ const Firebase: IFirebase = {
     const assignmentDocument = submissionQuery.docs[0];
     const assignmentData = assignmentDocument.data() as AssignmentSubmission;
     submission.files.push(...assignmentData.files);
+    // names for submissions shouldn't change
+    submission.studentFirstName = assignmentData.studentFirstName;
+    submission.studentLastName = assignmentData.studentLastName;
 
     const vanillaSub = Object.assign({}, submission); // must be a vanilla JS object for firestore
 
