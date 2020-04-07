@@ -24,7 +24,6 @@ const Home: React.FC<FirebaseProps> = () => {
 
   return (
     <GradingProvider>
-      {/* <Grid container spacing={2}> */}
       <Grid container>
         <TopAppBar />
         <Grid item xs={12} sm={12} md={3}>
