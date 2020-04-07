@@ -6,9 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import Firebase, { FirebaseProvider } from './firebase';
 import * as Sentry from '@sentry/browser';
 
-if (process.env.NODE_ENV === 'production') {
-  Sentry.init({ dsn: 'https://ebec230e71ab4dff9014f2228fd3a175@o206408.ingest.sentry.io/5191608' });
-}
+Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN });
 
 ReactDOM.render(
   <FirebaseProvider value={Firebase}>
