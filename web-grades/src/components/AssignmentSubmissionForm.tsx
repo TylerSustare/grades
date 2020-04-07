@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     padding: theme.spacing(1),
+    marginRight: theme.spacing(1),
   },
 }));
 
