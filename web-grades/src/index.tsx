@@ -4,6 +4,9 @@ import './index.css';
 import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import Firebase, { FirebaseProvider } from './firebase';
+import * as Sentry from '@sentry/browser';
+
+Sentry.init({ dsn: process.env.REACT_APP_SENTRY_DSN });
 
 ReactDOM.render(
   <FirebaseProvider value={Firebase}>
