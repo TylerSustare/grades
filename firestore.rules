@@ -1,36 +1,48 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-  // match /{document=**} { some super user }
-    match /classes/{classDoc}/{document=**} {
-    // if the token with the email coming in matches the email of the teacher on the class doc and the email matches the document we have by auth uid
+  // match /{document=**} { some super user someday }
+  function isAuthed(){
+    // request is authenticated
+    return request.auth != null;
+  }
+    match /classes/{classDoc}/{document=**} { // remember wildcard rules like this are ORed (||) in with the other rules
+      // allow if the token with the email coming in matches the email of the teacher on the class doc and the email matches the document we have by auth uid
       allow read, write: 
-      if request.auth != null &&
-        // a teacher's email must be a key in the "teachers" object
-        request.auth.token.email in get(/databases/$(database)/documents/classes/$(classDoc)).data.teachers &&
-        // The teacher's email must match the email from the "user" document that has an id of the `request.auth.uid`
-        // this probably isn't needed, but helps verify that the `request.auth.uid` and `request.auth.token.email` belong to the teacher and hasn't been tampered with  
-        request.auth.token.email == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email;
+        if isAuthed() &&
+          // a teacher's email must be a key in the "teachers" object
+          request.auth.token.email in get(/databases/$(database)/documents/classes/$(classDoc)).data.teachers &&
+          // The teacher's email must match the email from the "user" document that has an id of the `request.auth.uid`
+          // this probably isn't needed, but helps verify that the `request.auth.uid` and `request.auth.token.email` belong to the teacher and hasn't been tampered with  
+          request.auth.token.email == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email;
     }
     
     match /classes/{classDoc}/assignments/{doc}{
       allow read: 
-      // anyone logged in can see the assignment lists.
-      if request.auth != null;
+        if isAuthed(); // anyone logged in can see the assignment lists. 
+        //? TODO... maybe? only allow see the assignment lists for the classes the user is in?
     }
     
     match /classes/{classDoc}/assignments/{assignmentDoc}/submissions/{subDoc}{
-      allow read, write: 
-      if request.auth != null &&
-        // a student must be in the class's "students" object (key by email) to submit an assignment to a class
-        request.auth.token.email in get(/databases/$(database)/documents/classes/$(classDoc)).data.students &&
-        // this is the `resource` because you don't "get" a doc represented by the "match" statement, the "resource" is the subDoc document
-        request.auth.token.email == resource.data.email;
+      // functions inside of a "match" block don't need variables passed in as args
+      function isInClassAndHasCorrectEmail(){
+        return isAuthed() &&
+          // a student must be in the class's "students" object (key by email) to submit an assignment to a class
+          request.auth.token.email in get(/databases/$(database)/documents/classes/$(classDoc)).data.students &&
+          // this is the `resource` because you don't "get" a doc represented by the "match" statement, the "resource" is the subDoc document
+          request.auth.token.email == resource.data.email;
+      }
+      allow read: 
+        if isInClassAndHasCorrectEmail();
+      allow write: 
+        if isInClassAndHasCorrectEmail() &&
+          // a student can't change the email on an assignment. A teacher could because of the wildcard rule for all documents in a class
+          request.resource.data.email == resource.data.email;
     }
     
     match /users/{userDoc}{
       allow read, write:
-      if request.auth != null &&
+      if isAuthed() &&
         // users can only read and write from their own document. 
         request.auth.uid == userDoc;
     }
