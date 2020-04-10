@@ -11,7 +11,7 @@ deploy-hosting:
 deploy-db:
 	firebase deploy --only firestore:rules
 deploy-functions:
-	cd functions; yarn build; yarn deploy; cd ..;
+	cd functions; npm i; npm run deploy; cd ..;
 
 firebase-storage-bucket-cors:
 	gsutil cors set cors.json gs://dev-grades-fd.appspot.com
