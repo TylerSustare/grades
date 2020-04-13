@@ -36,7 +36,6 @@ const AddAssignmentForm: React.FC<Props> = ({ firebase, onSubmit }) => {
     if (onSubmit) {
       onSubmit();
     }
-    window.location.reload(false); // 🔔 shame
   };
 
   const classes = useStyles();

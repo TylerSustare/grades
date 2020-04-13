@@ -37,6 +37,7 @@ export interface IFirebase {
   createNewUser: (user: IUser) => Promise<void>;
   getUser: (name: string) => Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>>;
   getAssignments: (classId: string, orderBy: 'asc' | 'desc') => Promise<IGroupAssignmentsByDueAtLocalDateString>;
+  subscribeToAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function) => () => void;
   getAssignmentSubmissions: (classId: string, assignmentId: string) => Promise<AssignmentSubmission[]>;
   submitAssignmentToClass: (classId: string, assignmentId: string, submission: AssignmentSubmission) => Promise<void>;
   getAssignmentByStudentEmail: (
@@ -144,6 +145,35 @@ const Firebase: IFirebase = {
 
     const groupedBy: IGroupAssignmentsByDueAtLocalDateString = groupBy(assignments, 'dueAt');
     return groupedBy;
+  },
+
+  // this function returns an unsubscribe function that takes no arguments and returns void `() => void`
+  subscribeToAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function): (() => void) => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .collection('assignments')
+      .orderBy('dueAt', orderBy)
+      .onSnapshot(
+        function onNext(snapshot: firestoreQuery) {
+          const assignments: IDisplayAssignment[] = snapshot.docs.map((d) => {
+            const { name, createdAt, dueAt } = d.data() as IFirebaseAssignment;
+            return {
+              name,
+              createdAt: createdAt.toDate().toLocaleDateString(),
+              dueAt: dueAt.toDate().toLocaleDateString(),
+            };
+          });
+
+          const groupedBy: IGroupAssignmentsByDueAtLocalDateString = groupBy(assignments, 'dueAt');
+          setState(groupedBy);
+        },
+        function onError(error: Error) {
+          console.log('Error getting snapshot on subscribe to assignments');
+        }
+      );
+    return unsubscribe;
   },
 
   getAssignmentSubmissions: async (classId: string, assignmentId: string): Promise<AssignmentSubmission[]> => {

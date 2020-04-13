@@ -50,12 +50,11 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
   const { isTeacher } = useContext(TeacherContext);
   const [assignmentsByDueAt, setAssignmentsByDueAt] = useState({} as IGroupAssignmentsByDueAtLocalDateString);
   useEffect(() => {
-    async function getAssignments() {
-      // TODO: Send in ascending or descending as prop
-      const byDueAt = await firebase.getAssignments('7th', 'asc');
-      setAssignmentsByDueAt(byDueAt);
-    }
-    getAssignments();
+    // TODO: Send in ascending or descending as prop
+    const unsubscribe = firebase.subscribeToAssignments('7th', 'asc', setAssignmentsByDueAt);
+    return function cleanup() {
+      unsubscribe();
+    };
   }, [firebase]);
   const classes = useStyles();
   return (
