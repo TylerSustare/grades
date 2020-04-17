@@ -7,7 +7,7 @@
     "deploy-db": "firebase-deploy --only firestore:rules",
     "deploy-functions": "cd functions; npm i; npm run deploy; cd ..;",
     "firebase-storage-bucket-cors": "gsutil cors set cors.json gs://dev-grades-fd.appspot.com",
-    "check-web": "cd web-grades; npm run check; cd .."
+    "check-web": "cd web-grades; npm run validate; cd .."
   },
   "dependencies": {
     "husky": "^4.2.5"
