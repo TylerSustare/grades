@@ -33,10 +33,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --ignore-path .gitignore \"**/*.+(js|json|ts|tsx)\" .",
+    "write": "npm run prettier -- --write",
+    "check": "npm run prettier -- --check",
+    "validate": "npm run write && npm run check"
   },
   "browserslist": {
     "production": [
@@ -51,6 +52,11 @@
     ]
   },
   "devDependencies": {
-    "@types/uuid": "^7.0.2"
+    "@types/uuid": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^2.28.0",
+    "@typescript-eslint/parser": "^2.28.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "prettier": "^2.0.4"
   }
 }

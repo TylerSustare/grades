@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "react-app",
+    "eslint-config-prettier" // disables rules that prettier takes care of
+  ],
+  // these technically aren't needed for create react app, but just for 🎉
+  // TS overrides
+  "overrides": [
+    {
+      "files": "**/*.+(ts|tsx)",
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "plugins": ["@typescript-eslint/eslint-plugin"],
+      "extends": [
+        "plugin:@typescript-eslint/eslint-recommended", // disables some rules that aren't needed because of typescript
+        "plugin:@typescript-eslint/recommended",
+        "eslint-config-prettier/@typescript-eslint"
+      ]
+    }
+  ]
+}

@@ -24,33 +24,40 @@ type firestoreDocument = firebase.firestore.DocumentSnapshot<firebase.firestore.
 type firestoreQuery = firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
 
 export interface IFirebase {
-  // auth
+  //#region auth
   loginWithEmail: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
   signupWithEmail: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
   signOut: () => Promise<void>;
   googleAuth: () => Promise<firebase.auth.UserCredential>;
   checkUserAuth: Function;
-  //storage
+  //#endregion
+  //#region storage
   uploadFileToAssignment: (options: filePrams) => Promise<void>;
   getFilesForAssignment: (gradeId: string, assignmentId: string, studentUid: string, fileIds: string[]) => Promise<any>;
-  // firebase
+  //#endregion
+  //#region firebase
+  // users
   createNewUser: (user: IUser) => Promise<void>;
   getUser: (name: string) => Promise<firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>>;
+  // get assignments
   getAssignments: (classId: string, orderBy: 'asc' | 'desc') => Promise<IGroupAssignmentsByDueAtLocalDateString>;
   subscribeToAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function) => () => void;
   getAssignmentSubmissions: (classId: string, assignmentId: string) => Promise<AssignmentSubmission[]>;
-  submitAssignmentToClass: (classId: string, assignmentId: string, submission: AssignmentSubmission) => Promise<void>;
+  mapAssignmentsToLocalDateObjects: (querySnapshot: firestoreQuery) => IGroupAssignmentsByDueAtLocalDateString;
   getAssignmentByStudentEmail: (
     classId: string,
     assignmentId: string,
     studentEmail: string
   ) => Promise<AssignmentSubmission>;
+  // submit assignments
+  submitAssignmentToClass: (classId: string, assignmentId: string, submission: AssignmentSubmission) => Promise<void>;
   createNewAssignment: (classId: string, assignmentId: string, dueDate: Date) => Promise<void>;
   getTeacherList: (classId: string) => Promise<string[]>;
+  //#endregion
 }
 
 const Firebase: IFirebase = {
-  // auth
+  //#region auth
   loginWithEmail: (email: string, password: string): Promise<firebase.auth.UserCredential> =>
     firebase.auth().signInWithEmailAndPassword(email, password),
 
@@ -75,8 +82,9 @@ const Firebase: IFirebase = {
   },
 
   checkUserAuth: (user) => firebase.auth().onAuthStateChanged(user),
+  //#endregion
 
-  // storage
+  //#region storage
   uploadFileToAssignment: (options: filePrams): Promise<void> => {
     const { file, classId, assignmentId, studentUid, fileId } = options;
     const ref = firebase.storage().ref(`${classId}/${assignmentId}/${studentUid}/${fileId}`);
@@ -109,8 +117,10 @@ const Firebase: IFirebase = {
       return '';
     }
   },
+  //#endregion
 
-  // firestore
+  //#region firestore
+  //#region users
   createNewUser: async (user: IUser): Promise<void> => {
     await firebase.firestore().collection('users').doc(user.uid).set(user);
   },
@@ -120,6 +130,22 @@ const Firebase: IFirebase = {
       return;
     }
     return firebase.firestore().collection('users').doc(uid).get();
+  },
+  //#endregion
+
+  //#region get assignments
+  mapAssignmentsToLocalDateObjects: (querySnapshot: firestoreQuery): IGroupAssignmentsByDueAtLocalDateString => {
+    const assignments: IDisplayAssignment[] = querySnapshot.docs.map((d) => {
+      const { name, createdAt, dueAt } = d.data() as IFirebaseAssignment;
+      return {
+        name,
+        createdAt: createdAt.toDate().toLocaleDateString(),
+        dueAt: dueAt.toDate().toLocaleDateString(),
+      };
+    });
+
+    const groupedBy: IGroupAssignmentsByDueAtLocalDateString = groupBy(assignments, 'dueAt');
+    return groupedBy;
   },
 
   getAssignments: async (
@@ -134,21 +160,11 @@ const Firebase: IFirebase = {
       .orderBy('dueAt', orderBy)
       .get();
 
-    const assignments: IDisplayAssignment[] = assignmentQuery.docs.map((d) => {
-      const { name, createdAt, dueAt } = d.data() as IFirebaseAssignment;
-      return {
-        name,
-        createdAt: createdAt.toDate().toLocaleDateString(),
-        dueAt: dueAt.toDate().toLocaleDateString(),
-      };
-    });
-
-    const groupedBy: IGroupAssignmentsByDueAtLocalDateString = groupBy(assignments, 'dueAt');
-    return groupedBy;
+    return Firebase.mapAssignmentsToLocalDateObjects(assignmentQuery);
   },
 
-  // this function returns an unsubscribe function that takes no arguments and returns void `() => void`
   subscribeToAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function): (() => void) => {
+    // this function returns an unsubscribe function that takes no arguments and returns void `() => void`
     const unsubscribe = firebase
       .firestore()
       .collection('classes')
@@ -157,20 +173,12 @@ const Firebase: IFirebase = {
       .orderBy('dueAt', orderBy)
       .onSnapshot(
         function onNext(snapshot: firestoreQuery) {
-          const assignments: IDisplayAssignment[] = snapshot.docs.map((d) => {
-            const { name, createdAt, dueAt } = d.data() as IFirebaseAssignment;
-            return {
-              name,
-              createdAt: createdAt.toDate().toLocaleDateString(),
-              dueAt: dueAt.toDate().toLocaleDateString(),
-            };
-          });
-
-          const groupedBy: IGroupAssignmentsByDueAtLocalDateString = groupBy(assignments, 'dueAt');
+          const groupedBy = Firebase.mapAssignmentsToLocalDateObjects(snapshot);
           setState(groupedBy);
         },
         function onError(error: Error) {
-          console.log('Error getting snapshot on subscribe to assignments');
+          console.error('Error getting snapshot on subscribe to assignments');
+          console.error(error);
         }
       );
     return unsubscribe;
@@ -190,7 +198,7 @@ const Firebase: IFirebase = {
       .orderBy('studentLastName')
       .get();
 
-    return submissionQuery.docs.map((d) => new AssignmentSubmission(d.data() as IAssignmentSubmission));
+    return submissionQuery.docs.map((doc) => new AssignmentSubmission(doc.data() as IAssignmentSubmission));
   },
 
   getAssignmentByStudentEmail: async (
@@ -219,13 +227,16 @@ const Firebase: IFirebase = {
       return {} as AssignmentSubmission;
     }
   },
+  //#endregion
 
+  //#region create assignments
   submitAssignmentToClass: async (
     classId: string,
     assignmentId: string,
     submission: AssignmentSubmission
   ): Promise<void> => {
     // get assignment
+    // TODO: transaction
     const submissionQuery: firestoreQuery = await firebase
       .firestore()
       .collection('classes')
@@ -288,6 +299,7 @@ const Firebase: IFirebase = {
     });
 
     // add submission for each student
+    // TODO: use a batch write
     for (let i = 0; i < submissionObjectArray.length; i++) {
       await firebase
         .firestore()
@@ -305,6 +317,8 @@ const Firebase: IFirebase = {
     const teachersObject = classDoc.data().teachers;
     return Object.keys(teachersObject);
   },
+  //#endregion
+  //#endregion
 };
 
 export default Firebase;
