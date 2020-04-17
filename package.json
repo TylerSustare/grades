@@ -9,7 +9,8 @@
     "firebase-storage-bucket-cors": "gsutil cors set cors.json gs://dev-grades-fd.appspot.com",
     "check-web": "cd web-grades && npm run validate && cd .."
   },
-  "dependencies": {
-    "husky": "^4.2.5"
+  "devDependencies": {
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.4"
   }
 }

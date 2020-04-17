@@ -35,9 +35,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prettier": "prettier --ignore-path .gitignore \"**/*.+(js|json|ts|tsx)\" .",
-    "write": "npm run prettier -- --write",
-    "check": "npm run prettier -- --check",
-    "validate": "npm run write && npm run check"
+    "prettier-write": "npm run prettier -- --write",
+    "prettier-check": "npm run prettier -- --check",
+    "type-check": "tsc --noEmit",
+    "validate": "npm run type-check && npm run prettier-write && npm run prettier-check"
   },
   "browserslist": {
     "production": [

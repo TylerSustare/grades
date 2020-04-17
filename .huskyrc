@@ -1,5 +1,5 @@
 {
     "hooks":{
-        "pre-commit": "npm run check-web"
+        "pre-commit": "npm run check-web && lint-staged"
     }
 }

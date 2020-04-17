@@ -1,0 +1,8 @@
+{
+  "**.+(js|ts|tsx)": [
+    "echo eslint"
+  ],
+  "**/*.+(js|json|ts|tsx)": [
+    "echo 'prettier --write'",
+  ]
+}
