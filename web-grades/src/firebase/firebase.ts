@@ -11,8 +11,8 @@ import {
   IDisplayAssignment,
   IFirebaseAssignment,
   IGroupAssignmentsByDueAtLocalDateString,
-  filePrams,
-  fileUrlAndType,
+  FileParams,
+  FileUrlAndType,
 } from '../types/FirebaseModels';
 import groupBy from 'lodash/groupBy';
 
@@ -23,6 +23,7 @@ export type firebaseUser = firebase.User;
 type firestoreDocument = firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>;
 type firestoreQuery = firebase.firestore.QuerySnapshot<firebase.firestore.DocumentData>;
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface IFirebase {
   //#region auth
   loginWithEmail: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
@@ -32,7 +33,7 @@ export interface IFirebase {
   checkUserAuth: Function;
   //#endregion
   //#region storage
-  uploadFileToAssignment: (options: filePrams) => Promise<void>;
+  uploadFileToAssignment: (options: FileParams) => Promise<void>;
   getFilesForAssignment: (gradeId: string, assignmentId: string, studentUid: string, fileIds: string[]) => Promise<any>;
   //#endregion
   //#region firebase
@@ -42,6 +43,7 @@ export interface IFirebase {
   // get assignments
   getAssignments: (classId: string, orderBy: 'asc' | 'desc') => Promise<IGroupAssignmentsByDueAtLocalDateString>;
   subscribeToAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function) => () => void;
+  subscribeToVisibleToStudentAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function) => () => void;
   getAssignmentSubmissions: (classId: string, assignmentId: string) => Promise<AssignmentSubmission[]>;
   mapAssignmentsToLocalDateObjects: (querySnapshot: firestoreQuery) => IGroupAssignmentsByDueAtLocalDateString;
   getAssignmentByStudentEmail: (
@@ -53,6 +55,7 @@ export interface IFirebase {
   submitAssignmentToClass: (classId: string, assignmentId: string, submission: AssignmentSubmission) => Promise<void>;
   createNewAssignment: (classId: string, assignmentId: string, dueDate: Date) => Promise<void>;
   getTeacherList: (classId: string) => Promise<string[]>;
+  toggleHiddenAssignment: (classId: string, assignmentId: string) => Promise<any>;
   //#endregion
 }
 
@@ -85,7 +88,7 @@ const Firebase: IFirebase = {
   //#endregion
 
   //#region storage
-  uploadFileToAssignment: (options: filePrams): Promise<void> => {
+  uploadFileToAssignment: (options: FileParams): Promise<void> => {
     const { file, classId, assignmentId, studentUid, fileId } = options;
     const ref = firebase.storage().ref(`${classId}/${assignmentId}/${studentUid}/${fileId}`);
     return ref.put(file).then((snapshot) => snapshot);
@@ -98,7 +101,7 @@ const Firebase: IFirebase = {
     fileIds: string[]
   ): Promise<any> => {
     try {
-      const downloadUrls: fileUrlAndType[] = [];
+      const downloadUrls: FileUrlAndType[] = [];
       if (!gradeId || !assignmentId || !studentUid || !fileIds || fileIds.length === 0) {
         return downloadUrls;
       }
@@ -106,7 +109,7 @@ const Firebase: IFirebase = {
         const path = `${gradeId}/${assignmentId}/${studentUid}/${i}`;
         const ref = firebase.storage().ref(path);
         const metadata = await ref.getMetadata();
-        const returnObject: fileUrlAndType = {
+        const returnObject: FileUrlAndType = {
           fileUrl: await ref.getDownloadURL(),
           fileType: metadata?.contentType,
         };
@@ -136,8 +139,9 @@ const Firebase: IFirebase = {
   //#region get assignments
   mapAssignmentsToLocalDateObjects: (querySnapshot: firestoreQuery): IGroupAssignmentsByDueAtLocalDateString => {
     const assignments: IDisplayAssignment[] = querySnapshot.docs.map((d) => {
-      const { name, createdAt, dueAt } = d.data() as IFirebaseAssignment;
+      const { name, createdAt, dueAt, isVisibleToStudents } = d.data() as IFirebaseAssignment;
       return {
+        isVisibleToStudents,
         name,
         createdAt: createdAt.toDate().toLocaleDateString(),
         dueAt: dueAt.toDate().toLocaleDateString(),
@@ -170,6 +174,31 @@ const Firebase: IFirebase = {
       .collection('classes')
       .doc(classId)
       .collection('assignments')
+      .orderBy('dueAt', orderBy)
+      .onSnapshot(
+        function onNext(snapshot: firestoreQuery) {
+          const groupedBy = Firebase.mapAssignmentsToLocalDateObjects(snapshot);
+          setState(groupedBy);
+        },
+        function onError(error: Error) {
+          console.error('Error getting snapshot on subscribe to assignments');
+          console.error(error);
+        }
+      );
+    return unsubscribe;
+  },
+
+  subscribeToVisibleToStudentAssignments: (
+    classId: string,
+    orderBy: 'asc' | 'desc',
+    setState: Function
+  ): (() => void) => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .collection('assignments')
+      .where('isVisibleToStudents', '==', true)
       .orderBy('dueAt', orderBy)
       .onSnapshot(
         function onNext(snapshot: firestoreQuery) {
@@ -270,7 +299,7 @@ const Firebase: IFirebase = {
       .set(vanillaSub);
   },
 
-  createNewAssignment: async (classId: string, assignmentId: string, dueDate: Date): Promise<any> => {
+  createNewAssignment: async (classId: string, assignmentId: string, dueDate: Date): Promise<void> => {
     if (!classId || !assignmentId) {
       return;
     }
@@ -316,6 +345,26 @@ const Firebase: IFirebase = {
     const classDoc: firestoreDocument = await firebase.firestore().collection('classes').doc(classId).get();
     const teachersObject = classDoc.data().teachers;
     return Object.keys(teachersObject);
+  },
+
+  toggleHiddenAssignment: async (classId: string, assignmentId: string): Promise<void> => {
+    const assignment: firestoreDocument = await firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .collection('assignments')
+      .doc(assignmentId)
+      .get();
+    const assignmentData = assignment.data() as IFirebaseAssignment;
+    const { isVisibleToStudents: isVis } = assignmentData;
+
+    return firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .collection('assignments')
+      .doc(assignmentId)
+      .update({ isVisibleToStudents: !isVis });
   },
   //#endregion
   //#endregion

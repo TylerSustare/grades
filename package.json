@@ -4,13 +4,13 @@
     "dev": "firebase use dev",
     "deploy": "firebase deploy",
     "deploy-hosting": "cd web-grades && yarn && yarn build && cd .. && firebase deploy --only hosting",
-    "deploy-db": "firebase-deploy --only firestore:rules",
+    "deploy-db-rules": "firebase deploy --only firestore:rules",
+    "deploy-db-indexes": "firebase deploy --only firestore:indexes",
     "deploy-functions": "cd functions && npm i && npm run deploy && cd ..",
     "firebase-storage-bucket-cors": "gsutil cors set cors.json gs://dev-grades-fd.appspot.com",
     "check-web": "cd web-grades && npm run validate && cd .."
   },
   "devDependencies": {
-    "husky": "^4.2.5",
-    "lint-staged": "^10.1.4"
+    "husky": "^4.2.5"
   }
 }

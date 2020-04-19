@@ -35,7 +35,7 @@ const AddAssignmentForm: React.FC<Props> = ({ firebase, onSubmit }) => {
     setSelectedDate(date);
   };
   const { register, handleSubmit, errors } = useForm();
-  const onFormSubmit = async (data) => {
+  const onFormSubmit = async (data): Promise<void> => {
     setIsSubmitting(true);
     await firebase.createNewAssignment('7th', data.assignmentName, selectedDate);
     setIsSubmitting(false);
