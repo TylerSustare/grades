@@ -79,6 +79,7 @@ const Firebase: IFirebase = {
       displayName: user.user.displayName,
       photoURL: user.user.photoURL,
       email: user.user.email,
+      lastLoggedIn: new Date(),
     };
     await Firebase.createNewUser(userStuff);
     return user;
