@@ -13,7 +13,6 @@ import {
 } from '@material-ui/core';
 import { GradingContext } from './GradingContext';
 import { TeacherContext } from './TeacherContext';
-import { AuthContext } from './AuthContext';
 import AddAssignmentForm from './AddAssignmentModal';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { IDisplayAssignment, IGroupAssignmentsByDueAtLocalDateString } from '../types/FirebaseModels';

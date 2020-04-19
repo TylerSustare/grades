@@ -40,6 +40,7 @@ export interface IUser {
   displayName: string;
   photoURL: string;
   email: string;
+  lastLoggedIn?: Date;
 }
 
 export interface IFirebaseAssignment {
