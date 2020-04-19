@@ -12,7 +12,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": true, // TS isn't compiling these, babel is and just using TS for checking
     "jsx": "react",
     "sourceMap": true
   },

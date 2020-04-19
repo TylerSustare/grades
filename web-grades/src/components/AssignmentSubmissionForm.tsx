@@ -6,7 +6,7 @@ import { FirebaseProps } from '../types/PropInterfaces';
 import { makeStyles, TextField, Button, Typography, CircularProgress, Card } from '@material-ui/core';
 import { GradingContext } from './GradingContext';
 import { AssignmentSubmission } from '../types/FirebaseModels';
-import { filePrams } from '../types/FirebaseModels';
+import { FileParams } from '../types/FirebaseModels';
 import ShowFiles from './ShowFiles';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -84,7 +84,7 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
       const { files, score, studentComment } = values;
       const fileIds: string[] = [];
       for (let index = 0; index < files.length; index++) {
-        const options: filePrams = {
+        const options: FileParams = {
           classId: '7th',
           assignmentId: assignmentId,
           studentUid: currentUser.uid,

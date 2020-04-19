@@ -8,9 +8,12 @@ import {
   ExpansionPanelSummary,
   Typography,
   ExpansionPanelDetails,
+  Switch,
+  FormControlLabel,
 } from '@material-ui/core';
 import { GradingContext } from './GradingContext';
 import { TeacherContext } from './TeacherContext';
+import { AuthContext } from './AuthContext';
 import AddAssignmentForm from './AddAssignmentModal';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { IDisplayAssignment, IGroupAssignmentsByDueAtLocalDateString } from '../types/FirebaseModels';
@@ -50,13 +53,17 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
   const { isTeacher } = useContext(TeacherContext);
   const [assignmentsByDueAt, setAssignmentsByDueAt] = useState({} as IGroupAssignmentsByDueAtLocalDateString);
   useEffect(() => {
-    async function getAssignments() {
-      // TODO: Send in ascending or descending as prop
-      const byDueAt = await firebase.getAssignments('7th', 'asc');
-      setAssignmentsByDueAt(byDueAt);
+    // TODO: Send in ascending or descending
+    let unsubscribe: Function;
+    if (isTeacher) {
+      unsubscribe = firebase.subscribeToAssignments('7th', 'asc', setAssignmentsByDueAt);
+    } else {
+      unsubscribe = firebase.subscribeToVisibleToStudentAssignments('7th', 'asc', setAssignmentsByDueAt);
     }
-    getAssignments();
-  }, [firebase]);
+    return function cleanup() {
+      unsubscribe();
+    };
+  }, [firebase, isTeacher]);
   const classes = useStyles();
   return (
     <div className={classes.container}>
@@ -78,6 +85,19 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
               {assignmentsByDueAt[dueAtLocalString].map((assignmentObject: IDisplayAssignment) => {
                 return assignmentObject.name === assignmentId ? (
                   <li key={assignmentObject.name}>
+                    {isTeacher && (
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={assignmentObject.isVisibleToStudents}
+                            onChange={() => firebase.toggleHiddenAssignment('7th', assignmentObject.name)}
+                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                          />
+                        }
+                        label={assignmentObject.isVisibleToStudents ? 'Visible' : 'Hidden'}
+                        labelPlacement="bottom"
+                      />
+                    )}
                     <Button
                       className={classes.selected}
                       key={assignmentObject.name}
@@ -88,6 +108,19 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
                   </li>
                 ) : (
                   <li key={assignmentObject.name}>
+                    {isTeacher && (
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={assignmentObject.isVisibleToStudents}
+                            onChange={() => firebase.toggleHiddenAssignment('7th', assignmentObject.name)}
+                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                          />
+                        }
+                        label={assignmentObject.isVisibleToStudents ? 'Visible' : 'Hidden'}
+                        labelPlacement="bottom"
+                      />
+                    )}
                     <Button
                       className={classes.root}
                       key={assignmentObject.name}

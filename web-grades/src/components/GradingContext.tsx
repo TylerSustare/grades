@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 
 export const GradingContext = React.createContext({
   schoolId: '',
-  setSchoolId: (newClassId: string): void => {},
+  setSchoolId: (newClassId: string): void => null,
   classId: '',
-  setClassId: (newSchoolId: string): void => {},
+  setClassId: (newSchoolId: string): void => null,
   assignmentId: '',
-  setAssignmentId: (newAssignmentId: string): void => {},
+  setAssignmentId: (newAssignmentId: string): void => null,
 });
 GradingContext.displayName = 'GradingContext';
 

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FirebaseProps } from '../types/PropInterfaces';
 import { withFirebaseHOC } from '../firebase';
 import { AuthContext } from './AuthContext';
-import { fileUrlAndType } from '../types/FirebaseModels';
+import { FileUrlAndType } from '../types/FirebaseModels';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Button, makeStyles } from '@material-ui/core';
 
@@ -27,7 +27,7 @@ interface Props extends FirebaseProps {
 const ShowFiles: React.FC<Props> = ({ firebase, assignment, files, studentId }) => {
   const classes = useStyles();
   const { currentUser } = useContext(AuthContext);
-  const [fileUrls, setFileUrls] = useState([] as fileUrlAndType[]);
+  const [fileUrls, setFileUrls] = useState([] as FileUrlAndType[]);
   const [numPages, setNumPages] = useState({ numPages: null });
   const [currentPage, setCurrentPage] = useState(1);
 

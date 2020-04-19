@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/interface-name-prefix */
 export class AssignmentSubmission {
   email: string;
   files: string[]; // file location in firebase storage
@@ -45,19 +46,21 @@ export interface IFirebaseAssignment {
   dueAt: firebase.firestore.Timestamp;
   createdAt: firebase.firestore.Timestamp;
   name: string;
+  isVisibleToStudents: boolean;
 }
 
 export interface IDisplayAssignment {
   dueAt: string;
   createdAt: string;
   name: string;
+  isVisibleToStudents: boolean;
 }
 
 export interface IGroupAssignmentsByDueAtLocalDateString {
   [key: string]: IDisplayAssignment[];
 }
 
-export interface filePrams {
+export interface FileParams {
   classId: string;
   assignmentId: string;
   studentUid: string;
@@ -65,7 +68,7 @@ export interface filePrams {
   fileId: string;
 }
 
-export interface fileUrlAndType {
+export interface FileUrlAndType {
   fileUrl: string;
   fileType: string | undefined;
 }
