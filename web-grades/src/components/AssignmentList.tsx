@@ -86,10 +86,16 @@ const ClassList: React.FC<FirebaseProps> = ({ firebase }) => {
                 return assignmentObject.name === assignmentId ? (
                   <li key={assignmentObject.name}>
                     {isTeacher && (
-                      <Switch
-                        checked={assignmentObject.isVisibleToStudents}
-                        onChange={() => firebase.toggleHiddenAssignment('7th', assignmentObject.name)}
-                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={assignmentObject.isVisibleToStudents}
+                            onChange={() => firebase.toggleHiddenAssignment('7th', assignmentObject.name)}
+                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                          />
+                        }
+                        label={assignmentObject.isVisibleToStudents ? 'Visible' : 'Hidden'}
+                        labelPlacement="bottom"
                       />
                     )}
                     <Button
