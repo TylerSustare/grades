@@ -25,6 +25,7 @@ export const feedback = functions.firestore
       ) {
         const { params } = context;
         let primaryGradingTeachers = '';
+        let ccTeachers = [];
         const classSnapshot = await admin.firestore().collection('classes').doc(params?.classId).get();
         const classData = classSnapshot.data();
         const teachers = classData?.teachers;
@@ -32,12 +33,14 @@ export const feedback = functions.firestore
         for (const teacherEmail in teachers) {
           if (teachers.hasOwnProperty(teacherEmail) && teachers[teacherEmail]?.grader) {
             primaryGradingTeachers += ` ${teachers[teacherEmail].nameToStudents} (${teacherEmail}) `;
+            ccTeachers.push({ email: teacherEmail });
           }
         }
 
-        const msg = {
+        await mail.send({
           to: after?.email,
           from: `${params?.classId} Grade Assignments<support@sustare.com>`,
+          cc: ccTeachers,
           subject: `Your ${params?.classId} Grade teacher left you feedback on the assignment ${params?.assignmentId} 🎉`,
           text: `The feedback for assignment ${params?.assignmentId} is: ${after?.teacherComment}. 
             Head over to https://assignments.sustare.com to update your assignment if you need to update anything.`,
@@ -45,9 +48,7 @@ export const feedback = functions.firestore
                  <h2>${after?.teacherComment}</h2>
                  <p>Please send any updates to <bold>${primaryGradingTeachers}</bold> if needed.</p>
           `,
-        };
-
-        await mail.send(msg);
+        });
       }
     } catch (error) {
       console.error('error', JSON.stringify(error, null, 2));
