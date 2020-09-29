@@ -45,9 +45,20 @@ interface Props extends FirebaseProps {
   assignment: string;
   email: string;
   studentId: string;
+  score: string;
+  studentComment: string;
+  files: string[];
 }
 
-const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, studentId }) => {
+const AssignmentGrading: React.FC<Props> = ({
+  firebase,
+  email,
+  assignment,
+  studentId,
+  score,
+  studentComment,
+  files,
+}) => {
   const classes = useStyles();
   const [sub, setSub] = useState({} as AssignmentSubmission);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +70,7 @@ const AssignmentGrading: React.FC<Props> = ({ firebase, email, assignment, stude
       setSub(studentSubmission);
     }
     getAssignments();
-  }, [assignment, email, firebase, isSubmitting]);
+  }, [assignment, email, firebase, isSubmitting, score, studentComment, files]);
 
   setValue('score', sub.score);
   setValue('teacherComment', sub.teacherComment);

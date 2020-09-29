@@ -49,15 +49,28 @@ const AssignmentSubmissionForm: React.FC<FirebaseProps> = ({ firebase }) => {
   const [fileName, setFileName] = useState('');
   const [assignmentSubmission, setAssignmentSubmission] = useState({} as AssignmentSubmission);
   const { assignmentId } = useContext(GradingContext);
-
   useEffect(() => {
+    /**
+    // not real time approach
     async function getAssignments() {
       const studentSubmission = await firebase.getAssignmentByStudentEmail('7th', assignmentId, currentUser.email);
       setAssignmentSubmission(studentSubmission);
     }
     getAssignments();
-  }, [assignmentId, currentUser.email, firebase, isSubmitting]);
-
+    */
+    // real time
+    if (assignmentId && currentUser.email) {
+      const unsubscribe = firebase.subscribeToAssignmentByStudentEmail(
+        '7th',
+        assignmentId,
+        currentUser.email,
+        setAssignmentSubmission
+      );
+      return function cleanup() {
+        unsubscribe();
+      };
+    }
+  }, [assignmentId, currentUser.email, firebase]);
   // set form values
   assignmentSubmission?.score ? setValue('score', assignmentSubmission?.score) : setValue('score', '');
   assignmentSubmission?.studentComment

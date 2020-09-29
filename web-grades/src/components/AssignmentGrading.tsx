@@ -22,12 +22,13 @@ const AssignmentGrading: React.FC<FirebaseProps> = ({ firebase }) => {
 
   const { assignmentId } = useContext(GradingContext);
   useEffect(() => {
-    async function getAssignments() {
-      const assignments = await firebase.getAssignmentSubmissions('7th', assignmentId);
-      setAssignmentSubmissions(assignments);
+    if (assignmentId) {
+      const unsubscribe = firebase.subscribeToAssignmentSubmissions('7th', assignmentId, setAssignmentSubmissions);
+      return function cleanup() {
+        unsubscribe();
+      };
     }
-    getAssignments();
-  }, [firebase, assignmentId]);
+  }, [assignmentId, firebase]);
   return (
     <>
       <h1 className={classes.title}>{assignmentId}</h1>

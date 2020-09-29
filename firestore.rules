@@ -20,7 +20,7 @@ service cloud.firestore {
     match /classes/{classDoc}/assignments/{doc}{
       allow read: 
         if isAuthed(); // anyone logged in can see the assignment lists. 
-        //? TODO... maybe? only allow see the assignment lists for the classes the user is in?
+        //TODO: only allow see the assignment lists for the classes the user is in?
     }
     
     match /classes/{classDoc}/assignments/{assignmentDoc}/submissions/{subDoc}{

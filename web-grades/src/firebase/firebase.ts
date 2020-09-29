@@ -44,6 +44,7 @@ export interface IFirebase {
   getAssignments: (classId: string, orderBy: 'asc' | 'desc') => Promise<IGroupAssignmentsByDueAtLocalDateString>;
   subscribeToAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function) => () => void;
   subscribeToVisibleToStudentAssignments: (classId: string, orderBy: 'asc' | 'desc', setState: Function) => () => void;
+  subscribeToAssignmentSubmissions: (classId: string, assignmentId: string, setState: Function) => () => void;
   getAssignmentSubmissions: (classId: string, assignmentId: string) => Promise<AssignmentSubmission[]>;
   mapAssignmentsToLocalDateObjects: (querySnapshot: firestoreQuery) => IGroupAssignmentsByDueAtLocalDateString;
   getAssignmentByStudentEmail: (
@@ -51,6 +52,12 @@ export interface IFirebase {
     assignmentId: string,
     studentEmail: string
   ) => Promise<AssignmentSubmission>;
+  subscribeToAssignmentByStudentEmail: (
+    classId: string,
+    assignmentId: string,
+    studentEmail: string,
+    setState: Function
+  ) => () => void;
   // submit assignments
   submitAssignmentToClass: (classId: string, assignmentId: string, submission: AssignmentSubmission) => Promise<void>;
   createNewAssignment: (classId: string, assignmentId: string, dueDate: Date) => Promise<void>;
@@ -214,6 +221,28 @@ const Firebase: IFirebase = {
     return unsubscribe;
   },
 
+  subscribeToAssignmentSubmissions: (classId: string, assignmentId: string, setState: Function): (() => void) => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .collection('assignments')
+      .doc(assignmentId)
+      .collection('submissions')
+      .orderBy('studentLastName')
+      .onSnapshot(
+        function onNext(snapshot: firestoreQuery) {
+          const state = snapshot.docs.map((doc) => new AssignmentSubmission(doc.data() as IAssignmentSubmission));
+          setState(state);
+        },
+        function onError(error: Error) {
+          console.error('Error getting snapshot on subscribe to assignments');
+          console.error(error);
+        }
+      );
+    return unsubscribe;
+  },
+
   getAssignmentSubmissions: async (classId: string, assignmentId: string): Promise<AssignmentSubmission[]> => {
     if (!classId || !assignmentId) {
       return [];
@@ -256,6 +285,33 @@ const Firebase: IFirebase = {
       console.error('error', error);
       return {} as AssignmentSubmission;
     }
+  },
+  subscribeToAssignmentByStudentEmail: (
+    classId: string,
+    assignmentId: string,
+    studentEmail: string,
+    setState: Function
+  ): (() => void) => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection('classes')
+      .doc(classId)
+      .collection('assignments')
+      .doc(assignmentId)
+      .collection('submissions')
+      .where('email', '==', studentEmail)
+      .limit(1)
+      .onSnapshot(
+        function onNext(snapshot: firestoreQuery) {
+          const state = new AssignmentSubmission(snapshot.docs[0].data() as IAssignmentSubmission);
+          setState(state);
+        },
+        function onError(error: Error) {
+          console.error('Error getting snapshot on subscribe to assignments');
+          console.error(error);
+        }
+      );
+    return unsubscribe;
   },
   //#endregion
 
